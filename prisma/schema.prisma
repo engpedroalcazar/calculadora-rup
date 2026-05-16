@@ -43,3 +43,18 @@ model Lead {
   @@index([pago])
   @@index([createdAt])
 }
+
+model Pacote {
+  id        String   @id @default(cuid())
+  email     String                        // dono do pacote — matching por email
+  total     Int      @default(10)         // créditos totais (10 análises)
+  usado     Int      @default(1)          // 1 já gasto no lead que gerou a compra
+  ativo     Boolean  @default(true)
+  leadId    String?                       // lead que originou a compra
+  expiraEm  DateTime                      // 30 dias da compra
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email, ativo])
+  @@index([expiraEm])
+}
