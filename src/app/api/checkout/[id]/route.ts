@@ -40,6 +40,11 @@ export async function POST(
         name: lead.nome,
         ...(lead.email ? { email: lead.email } : {}),
       },
+      payment_methods: {
+        excluded_payment_types: [],   // não excluir nada — deixa PIX, cartão, boleto
+        excluded_payment_methods: [],
+        installments: 1,              // sem parcelamento (produto de baixo valor)
+      },
       back_urls: {
         success: `${appUrl}/relatorio/${id}`,
         failure: `${appUrl}/checkout?id=${id}&erro=pagamento`,

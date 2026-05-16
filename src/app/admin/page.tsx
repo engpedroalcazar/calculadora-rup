@@ -328,7 +328,10 @@ function LeadModal({ lead, onClose, token }: { lead: Lead; onClose: () => void; 
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
           <div>
             <p className="font-black text-slate-950 text-lg">{lead.nome}</p>
-            <p className="text-sm text-slate-500">{new Date(lead.createdAt).toLocaleString("pt-BR")}</p>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="font-mono text-xs font-bold text-slate-400 bg-slate-100 rounded px-2 py-0.5">{`ORD-${lead.id.slice(-8).toUpperCase()}`}</span>
+              <span className="text-xs text-slate-400">{new Date(lead.createdAt).toLocaleString("pt-BR")}</span>
+            </div>
           </div>
           <button onClick={onClose} className="rounded-full p-2 hover:bg-slate-100"><X className="h-5 w-5 text-slate-500" /></button>
         </div>
@@ -630,7 +633,7 @@ function AdminConteudo() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50 text-left">
-                  {["Nome", "Contato", "Cidade", "Atividade", "Severidade", "Desvio", "Pago", "Data", ""].map(h => (
+                  {["Nº Pedido", "Nome", "Contato", "Cidade", "Atividade", "Severidade", "Desvio", "Pago", "Data", ""].map(h => (
                     <th key={h} className="px-4 py-3 font-semibold text-slate-500 whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
@@ -642,8 +645,12 @@ function AdminConteudo() {
                   <tr><td colSpan={9} className="px-6 py-16 text-center text-slate-400">{busca || sevFilter || pagoFilter ? "Nenhum lead encontrado para este filtro." : "Nenhum lead ainda."}</td></tr>
                 ) : leads.map(lead => {
                   const cor = corSeveridade(lead.severidade as Severidade);
+                  const pedidoId = `ORD-${lead.id.slice(-8).toUpperCase()}`;
                   return (
                     <tr key={lead.id} onClick={() => setSelectedLead(lead)} className="border-b border-slate-50 hover:bg-blue-50/40 cursor-pointer transition-colors">
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <span className="font-mono text-xs font-bold text-slate-500 bg-slate-100 rounded px-2 py-0.5">{pedidoId}</span>
+                      </td>
                       <td className="px-4 py-3 font-semibold text-slate-950 whitespace-nowrap">
                         {lead.nome}{lead.perfil && <span className="ml-2 text-xs font-normal text-slate-400">{lead.perfil}</span>}
                       </td>
