@@ -67,7 +67,10 @@ export async function POST(
     }
 
     const preference = await res.json();
-    return NextResponse.json({ ok: true, url: preference.init_point });
+    // Sandbox usa sandbox_init_point; produção usa init_point
+    const isSandbox = process.env.MP_SANDBOX === "true";
+    const url = isSandbox ? preference.sandbox_init_point : preference.init_point;
+    return NextResponse.json({ ok: true, url });
   } catch (err) {
     console.error("[checkout]", err);
     return NextResponse.json({ error: "Erro interno" }, { status: 500 });
