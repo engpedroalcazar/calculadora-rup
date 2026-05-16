@@ -5,21 +5,71 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
+const PLANOS = [
+  {
+    id: "individual",
+    nome: "Individual",
+    preco: 39.9,
+    destaque: false,
+    descricao: "Análise de 1 atividade",
+    itens: [
+      "Relatório completo de 1 frente de serviço",
+      "RUP real, referência e desvio detalhados",
+      "HH total e custo estimado",
+      "Diagnóstico automático com causas e ações",
+    ],
+  },
+  {
+    id: "pacote",
+    nome: "Pacote 10 Atividades",
+    preco: 249.9,
+    destaque: true,
+    descricao: "Até 10 frentes de serviço",
+    economia: "Economia de R$ 149,00",
+    itens: [
+      "Tudo do plano Individual",
+      "Até 10 análises de atividades diferentes",
+      "Ideal para múltiplas frentes de serviço",
+      "Validade de 30 dias para uso",
+    ],
+  },
+] as const;
+
+type PlanoId = typeof PLANOS[number]["id"];
+
+const inclusos = [
+  "RUP real calculada e RUP de referência",
+  "HH total consumido na atividade",
+  "Custo estimado de mão de obra",
+  "Perda estimada em relação à referência",
+  "Diagnóstico automático detalhado",
+  "Causas mais prováveis do desvio",
+  "Ações recomendadas para correção",
+  "Nível de confiabilidade da análise",
+];
+
 function CheckoutConteudo() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const id = searchParams.get("id");
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
-  const preco = Number(process.env.NEXT_PUBLIC_PRECO ?? 39.9);
+  const [plano, setPlano] = useState<PlanoId>("individual");
   void router;
+
+  const planoSelecionado = PLANOS.find((p) => p.id === plano)!;
+  const preco = planoSelecionado.preco;
 
   async function confirmar() {
     if (!id) return;
     setLoading(true);
     setErro("");
     try {
-      const res = await fetch(`/api/checkout/${id}`, { method: "POST" });
+      const res = await fetch(`/api/checkout/${id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plano, valor: preco }),
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Erro no pagamento");
       window.location.href = data.url;
@@ -29,23 +79,12 @@ function CheckoutConteudo() {
     }
   }
 
-  const inclusos = [
-    "RUP real calculada e RUP de referência",
-    "HH total consumido na atividade",
-    "Custo estimado de mão de obra",
-    "Perda estimada em relação à referência",
-    "Diagnóstico automático detalhado",
-    "Causas mais prováveis do desvio",
-    "Ações recomendadas para correção",
-    "Nível de confiabilidade da análise",
-  ];
-
   return (
     <div style={{ minHeight: "100vh", background: "var(--navy-900)", color: "#f3ecde", fontFamily: "var(--font-body)" }}>
 
       {/* Header */}
       <header style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(11,18,38,0.92)", borderBottom: "1px solid var(--navy-line)", backdropFilter: "blur(12px)" }}>
-        <div style={{ maxWidth: 680, margin: "0 auto", padding: "0 20px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
+        <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 20px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
           <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <Image src="/assets/obraradar-mark-clean.png" alt="ObraRadar" width={48} height={30} style={{ objectFit: "contain" }} />
             <span style={{ fontFamily: "var(--font-display)", fontSize: 16, color: "#f3ecde", letterSpacing: "0.04em" }}>OBRA RADAR</span>
@@ -57,32 +96,90 @@ function CheckoutConteudo() {
         </div>
       </header>
 
-      <div style={{ maxWidth: 560, margin: "0 auto", padding: "40px 20px 80px" }}>
+      <div style={{ maxWidth: 720, margin: "0 auto", padding: "40px 20px 80px" }}>
 
-        <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(24px, 5vw, 32px)", color: "#f3ecde", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.02em" }}>
-          Relatório Completo
+        <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(24px, 5vw, 32px)", color: "#f3ecde", margin: "0 0 6px", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+          Escolha seu plano
         </h1>
-        <p style={{ fontSize: 15, color: "rgba(243,236,222,0.6)", margin: "0 0 32px" }}>
-          Libere todas as métricas e o diagnóstico detalhado.
+        <p style={{ fontSize: 15, color: "rgba(243,236,222,0.55)", margin: "0 0 32px" }}>
+          Selecione a opção que melhor se encaixa na sua necessidade.
         </p>
+
+        {/* Seleção de planos */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16, marginBottom: 28 }}>
+          {PLANOS.map((p) => {
+            const selecionado = plano === p.id;
+            return (
+              <button
+                key={p.id}
+                onClick={() => setPlano(p.id)}
+                style={{
+                  position: "relative",
+                  padding: 24,
+                  background: selecionado ? "rgba(201,165,116,0.1)" : "rgba(243,236,222,0.03)",
+                  border: selecionado ? "2px solid var(--gold-500)" : "2px solid rgba(243,236,222,0.1)",
+                  borderRadius: "var(--radius-lg)",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  transition: "all 0.2s",
+                  fontFamily: "var(--font-body)",
+                }}
+              >
+                {/* Badge destaque */}
+                {p.destaque && (
+                  <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: "var(--cta-500)", color: "#fff", fontSize: 10, fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase", padding: "4px 14px", borderRadius: 100, whiteSpace: "nowrap" }}>
+                    Melhor custo-benefício
+                  </div>
+                )}
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+                  <div>
+                    <div style={{ fontFamily: "var(--font-display)", fontSize: 18, color: selecionado ? "var(--gold-500)" : "#f3ecde", letterSpacing: "0.04em" }}>{p.nome}</div>
+                    <div style={{ fontSize: 13, color: "rgba(243,236,222,0.55)", marginTop: 2 }}>{p.descricao}</div>
+                  </div>
+                  <div style={{ width: 22, height: 22, borderRadius: "50%", border: `2px solid ${selecionado ? "var(--gold-500)" : "rgba(243,236,222,0.2)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    {selecionado && <div style={{ width: 10, height: 10, borderRadius: "50%", background: "var(--gold-500)" }} />}
+                  </div>
+                </div>
+
+                <div style={{ fontFamily: "var(--font-display)", fontSize: 32, color: selecionado ? "#f3ecde" : "rgba(243,236,222,0.7)", lineHeight: 1, marginBottom: 4 }}>
+                  R$ {p.preco.toFixed(2).replace(".", ",")}
+                </div>
+                {"economia" in p && (
+                  <div style={{ fontSize: 11, color: "var(--cta-500)", fontWeight: 700, letterSpacing: "0.1em", marginBottom: 16 }}>{p.economia}</div>
+                )}
+                {!("economia" in p) && <div style={{ marginBottom: 16 }} />}
+
+                <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 7 }}>
+                  {p.itens.map((item) => (
+                    <li key={item} style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 13, color: selecionado ? "rgba(243,236,222,0.8)" : "rgba(243,236,222,0.5)" }}>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={selecionado ? "var(--cta-500)" : "rgba(243,236,222,0.3)"} strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}><path d="M4 12l5 5L20 6"/></svg>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </button>
+            );
+          })}
+        </div>
 
         {/* O que está incluso */}
         <div style={{ marginBottom: 20, padding: 24, background: "rgba(243,236,222,0.03)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)" }}>
-          <p style={{ margin: "0 0 16px", fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--gold-500)" }}>O que você recebe</p>
-          <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 10 }}>
+          <p style={{ margin: "0 0 16px", fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--gold-500)" }}>O que você recebe em cada relatório</p>
+          <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
             {inclusos.map((item) => (
-              <li key={item} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14, color: "rgba(243,236,222,0.8)" }}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--cta-500)" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}><path d="M4 12l5 5L20 6"/></svg>
+              <li key={item} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13, color: "rgba(243,236,222,0.75)" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--cta-500)" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}><path d="M4 12l5 5L20 6"/></svg>
                 {item}
               </li>
             ))}
           </ul>
         </div>
 
-        {/* Resumo de pagamento */}
+        {/* Resumo */}
         <div style={{ marginBottom: 20, padding: 24, background: "rgba(201,165,116,0.06)", border: "1px solid var(--gold-line)", borderRadius: "var(--radius-md)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: 14, marginBottom: 14, borderBottom: "1px solid rgba(243,236,222,0.08)" }}>
-            <span style={{ fontSize: 14, color: "rgba(243,236,222,0.7)" }}>Relatório de produtividade RUP</span>
+            <span style={{ fontSize: 14, color: "rgba(243,236,222,0.7)" }}>{planoSelecionado.nome} — {planoSelecionado.descricao}</span>
             <span style={{ fontWeight: 700, color: "#f3ecde" }}>R$ {preco.toFixed(2).replace(".", ",")}</span>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>

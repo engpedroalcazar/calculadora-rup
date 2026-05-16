@@ -4,27 +4,23 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { corSeveridade, fmt } from "@/lib/rup";
-import type { Severidade } from "@/lib/rup";
 
 interface ResultadoData {
-  id: string; severidade: Severidade; desvio: number;
+  id: string; severidade: string; desvio: number;
   rupReal: number; rupRef: number; hhTotal: number;
   atividadeNome: string; unidade: string;
 }
 
-function mensagemPrincipal(s: Severidade, desvio: number): { titulo: string; corpo: string } {
-  if (s === "NORMAL") return { titulo: "Produtividade dentro do esperado.", corpo: "Sua equipe está alinhada com a referência do setor." };
-  if (s === "VERIFICAR") return { titulo: "Produtividade acima da referência.", corpo: "Verifique a medição — equipe excepcionalmente produtiva ou erro de lançamento." };
-  const pct = Math.abs(desvio).toFixed(0);
-  if (s === "ATENÇÃO") return { titulo: "Atenção: desvio moderado detectado.", corpo: `${pct}% acima da referência. Acompanhe por mais dias antes de agir.` };
-  if (s === "ALERTA") return { titulo: "Alerta: equipe abaixo do esperado.", corpo: `Desvio de ${pct}% acima da referência. Avalie causas imediatamente.` };
-  return { titulo: "Crítico: perda grave de produtividade.", corpo: `Desvio de ${pct}% acima da referência. Risco real de estouro de custo.` };
-}
-
-const sevColor: Record<Severidade, string> = {
-  VERIFICAR: "#6b8fb5", NORMAL: "#74a87a", ATENÇÃO: "#d4a04a", ALERTA: "#d97c4a", CRÍTICO: "#c95a4a",
-};
+const inclusos = [
+  "RUP real calculada e RUP de referência",
+  "Desvio percentual em relação ao benchmark",
+  "HH total consumido na atividade",
+  "Custo estimado de mão de obra",
+  "Perda estimada em relação à referência",
+  "Diagnóstico automático detalhado",
+  "Causas mais prováveis do desvio",
+  "Ações recomendadas para correção",
+];
 
 function ResultadoConteudo() {
   const searchParams = useSearchParams();
@@ -50,11 +46,7 @@ function ResultadoConteudo() {
     </div>
   );
 
-  const cor = corSeveridade(data.severidade);
-  const msg = mensagemPrincipal(data.severidade, data.desvio);
-  const sevBg = sevColor[data.severidade];
-  const mostrarAlerta = data.severidade !== "NORMAL" && data.severidade !== "VERIFICAR";
-  void cor;
+  const preco = Number(process.env.NEXT_PUBLIC_PRECO ?? 39.9);
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--navy-900)", color: "#f3ecde", fontFamily: "var(--font-body)" }}>
@@ -66,106 +58,84 @@ function ResultadoConteudo() {
             <Image src="/assets/obraradar-mark-clean.png" alt="ObraRadar" width={48} height={30} style={{ objectFit: "contain" }} />
             <span style={{ fontFamily: "var(--font-display)", fontSize: 16, color: "#f3ecde", letterSpacing: "0.04em" }}>OBRA RADAR</span>
           </Link>
-          <span style={{ fontSize: 12, color: "rgba(243,236,222,0.5)", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>Diagnóstico concluído</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--cta-500)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12l5 5L20 6"/></svg>
+            Análise concluída
+          </div>
         </div>
       </header>
 
-      <div style={{ maxWidth: 680, margin: "0 auto", padding: "40px 20px 80px" }}>
+      <div style={{ maxWidth: 640, margin: "0 auto", padding: "40px 20px 80px" }}>
 
-        {/* Badge severidade */}
-        <div style={{ textAlign: "center", marginBottom: 28 }}>
-          <span style={{
-            display: "inline-block",
-            background: sevBg,
-            color: "#fff",
-            padding: "8px 28px",
-            borderRadius: 40,
-            fontFamily: "var(--font-display)",
-            fontSize: 18,
-            fontWeight: 700,
-            letterSpacing: "0.1em",
-          }}>{data.severidade}</span>
-        </div>
-
-        {/* Mensagem */}
-        <div style={{
-          marginBottom: 20,
-          padding: 20,
-          background: mostrarAlerta ? "rgba(217,124,74,0.1)" : "rgba(116,168,122,0.1)",
-          border: `1px solid ${mostrarAlerta ? "rgba(217,124,74,0.35)" : "rgba(116,168,122,0.35)"}`,
-          borderRadius: "var(--radius-md)",
-        }}>
-          <p style={{ fontWeight: 800, fontSize: 16, margin: "0 0 6px", color: "#f3ecde" }}>{msg.titulo}</p>
-          <p style={{ fontSize: 14, lineHeight: 1.65, color: "rgba(243,236,222,0.75)", margin: 0 }}>{msg.corpo}</p>
-        </div>
-
-        {/* Atividade */}
-        <div style={{ marginBottom: 20, padding: "14px 18px", background: "rgba(243,236,222,0.04)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)" }}>
-          <p style={{ margin: "0 0 4px", fontSize: 11, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--gold-500)" }}>Atividade analisada</p>
-          <p style={{ margin: 0, fontWeight: 700, fontSize: 16, color: "#f3ecde" }}>{data.atividadeNome}</p>
-        </div>
-
-        {/* Resultado parcial */}
-        <div style={{ marginBottom: 24, padding: 20, background: "rgba(243,236,222,0.03)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
-            <p style={{ margin: 0, fontWeight: 800, fontSize: 15, color: "#f3ecde" }}>Resultado da análise</p>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(243,236,222,0.4)" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-              Relatório completo bloqueado
-            </div>
+        {/* Confirmação */}
+        <div style={{ textAlign: "center", marginBottom: 36 }}>
+          <div style={{ width: 64, height: 64, borderRadius: "50%", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--cta-500)" strokeWidth="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(26px, 5vw, 36px)", color: "#f3ecde", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+            Diagnóstico pronto!
+          </h1>
+          <p style={{ fontSize: 15, color: "rgba(243,236,222,0.6)", margin: 0 }}>
+            Sua análise foi processada. Os resultados estão bloqueados até a liberação.
+          </p>
+        </div>
 
-          {/* Desvio — visível */}
-          <div style={{ padding: 18, background: "rgba(243,236,222,0.05)", borderRadius: "var(--radius-md)", marginBottom: 12 }}>
-            <p style={{ margin: "0 0 4px", fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(243,236,222,0.55)" }}>Desvio em relação à referência</p>
-            <p style={{ margin: 0, fontSize: 40, fontFamily: "var(--font-display)", color: data.desvio > 0 ? "#c95a4a" : "#74a87a", lineHeight: 1 }}>
-              {data.desvio > 0 ? "+" : ""}{fmt(data.desvio, 1)}%
-            </p>
-            <p style={{ margin: "6px 0 0", fontSize: 12, color: "rgba(243,236,222,0.45)" }}>
-              RUP real: {fmt(data.rupReal)} Hh/{data.unidade} · Referência: {fmt(data.rupRef)} Hh/{data.unidade}
-            </p>
+        {/* Atividade analisada */}
+        <div style={{ marginBottom: 20, padding: "14px 18px", background: "rgba(243,236,222,0.04)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)", display: "flex", alignItems: "center", gap: 12 }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold-500)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          <div>
+            <p style={{ margin: 0, fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gold-500)" }}>Atividade analisada</p>
+            <p style={{ margin: "2px 0 0", fontWeight: 700, fontSize: 15, color: "#f3ecde" }}>{data.atividadeNome}</p>
           </div>
+        </div>
 
-          {/* Métricas bloqueadas */}
+        {/* Bloqueio visual */}
+        <div style={{ marginBottom: 24, padding: 24, background: "rgba(243,236,222,0.02)", border: "1px solid rgba(243,236,222,0.08)", borderRadius: "var(--radius-md)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(243,236,222,0.3)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            <span style={{ fontSize: 12, color: "rgba(243,236,222,0.4)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>Resultados bloqueados</span>
+          </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 10 }}>
-            {["HH total", "Custo estimado", "Perda estimada"].map((label) => (
-              <div key={label} style={{ position: "relative", padding: 16, background: "rgba(243,236,222,0.03)", borderRadius: "var(--radius-md)", overflow: "hidden" }}>
-                <p style={{ margin: "0 0 4px", fontSize: 11, color: "rgba(243,236,222,0.4)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>{label}</p>
-                <p style={{ margin: 0, fontSize: 22, fontFamily: "var(--font-display)", color: "rgba(243,236,222,0.15)", filter: "blur(5px)", userSelect: "none" }}>000,00</p>
-                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(2px)" }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(243,236,222,0.3)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            {["Severidade", "Desvio %", "RUP Real", "HH Total", "Custo estimado", "Perda estimada"].map((label) => (
+              <div key={label} style={{ position: "relative", padding: "14px 16px", background: "rgba(243,236,222,0.03)", borderRadius: "var(--radius-md)", overflow: "hidden" }}>
+                <p style={{ margin: "0 0 6px", fontSize: 10, color: "rgba(243,236,222,0.35)", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase" }}>{label}</p>
+                <p style={{ margin: 0, fontSize: 22, fontFamily: "var(--font-display)", color: "rgba(243,236,222,0.08)", filter: "blur(6px)", userSelect: "none" }}>—</p>
+                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(243,236,222,0.2)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* CTA */}
-        <div style={{ padding: 28, background: "rgba(201,165,116,0.08)", border: "1px solid var(--gold-line)", borderRadius: "var(--radius-md)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+        {/* CTA unlock */}
+        <div style={{ padding: 28, background: "rgba(201,165,116,0.07)", border: "1px solid var(--gold-line)", borderRadius: "var(--radius-md)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--cta-500)" strokeWidth="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
             <p style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 18, color: "#f3ecde", letterSpacing: "0.03em" }}>RELATÓRIO COMPLETO</p>
           </div>
-          <p style={{ fontSize: 14, lineHeight: 1.65, color: "rgba(243,236,222,0.7)", marginBottom: 16 }}>
-            Libere HH total, custo estimado, perda em reais, causas mais prováveis e ações recomendadas.
+          <p style={{ fontSize: 14, lineHeight: 1.65, color: "rgba(243,236,222,0.65)", marginBottom: 18 }}>
+            Libere todos os indicadores, o diagnóstico detalhado, causas prováveis e ações recomendadas.
           </p>
-          <ul style={{ margin: "0 0 20px", padding: 0, listStyle: "none", display: "grid", gap: 8 }}>
-            {["RUP real e referência detalhadas", "HH total e custo estimado", "Perda estimada em reais", "Diagnóstico automático completo", "Causas mais prováveis", "Ações recomendadas"].map((item) => (
-              <li key={item} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "rgba(243,236,222,0.8)" }}>
+          <ul style={{ margin: "0 0 22px", padding: 0, listStyle: "none", display: "grid", gap: 8 }}>
+            {inclusos.map((item) => (
+              <li key={item} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "rgba(243,236,222,0.75)" }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--cta-500)" strokeWidth="2"><path d="M4 12l5 5L20 6"/></svg>
                 {item}
               </li>
             ))}
           </ul>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
+
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18, flexWrap: "wrap", gap: 8 }}>
             <div>
-              <p style={{ margin: 0, fontSize: 11, color: "rgba(243,236,222,0.5)", letterSpacing: "0.12em", textTransform: "uppercase" }}>Valor do relatório</p>
+              <p style={{ margin: 0, fontSize: 11, color: "rgba(243,236,222,0.45)", letterSpacing: "0.12em", textTransform: "uppercase" }}>A partir de</p>
               <p style={{ margin: "4px 0 0", fontFamily: "var(--font-display)", fontSize: 36, color: "var(--cta-500)", lineHeight: 1 }}>
-                R$ {Number(process.env.NEXT_PUBLIC_PRECO ?? 39.9).toFixed(2).replace(".", ",")}
+                R$ {preco.toFixed(2).replace(".", ",")}
               </p>
             </div>
-            <p style={{ fontSize: 12, color: "rgba(243,236,222,0.4)", maxWidth: 130, textAlign: "right" }}>Acesso imediato após pagamento</p>
+            <p style={{ fontSize: 12, color: "rgba(243,236,222,0.4)", maxWidth: 140, textAlign: "right" }}>Acesso imediato após pagamento</p>
           </div>
+
           <Link href={`/checkout?id=${data.id}`}>
             <button style={{
               width: "100%", padding: "18px 24px",
@@ -184,7 +154,7 @@ function ResultadoConteudo() {
         </div>
 
         <div style={{ marginTop: 28, textAlign: "center" }}>
-          <Link href="/diagnostico" style={{ fontSize: 13, color: "rgba(243,236,222,0.45)" }}>
+          <Link href="/diagnostico" style={{ fontSize: 13, color: "rgba(243,236,222,0.4)" }}>
             Analisar outra atividade
           </Link>
         </div>

@@ -221,6 +221,8 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 }
 
 /* ── Responsive grids ─────────────────────────────────────────────── */
+
+/* Legado mantido para compatibilidade com outras páginas */
 .hero-grid {
   display: grid;
   grid-template-columns: 1.3fr 1fr;
@@ -250,16 +252,65 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 
 .nav-links { display: flex; }
 
-@media (max-width: 860px) {
+/* ── Novos layouts da landing v4 ──────────────────────────────────── */
+
+/* Barra de severidade horizontal */
+.sev-bar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.sev-bar-item {
+  padding: 18px 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+}
+
+/* Fórmulas em 2 colunas */
+.metodo-formula-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Etapas como linha horizontal com número gigante */
+.step-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+/* Footer CTA split */
+.footer-cta-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 64px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .footer-cta-grid { grid-template-columns: 1fr; gap: 40px; }
+  .metodo-formula-grid { grid-template-columns: 1fr; }
+  .sev-bar-grid { grid-template-columns: repeat(5, 1fr); }
+  .nav-links { display: none; }
   .hero-grid { grid-template-columns: 1fr; }
   .hero-card-col { display: none; }
   .metodo-grid { grid-template-columns: 1fr; }
   .steps-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
-  .nav-links { display: none; }
 }
 
 @media (max-width: 560px) {
+  .sev-bar-grid { grid-template-columns: 1fr 1fr; }
+  .sev-bar-grid > *:last-child { grid-column: 1 / -1; }
+  .step-row { flex-direction: column; gap: 12px; }
+  .step-row > *:last-child { display: none; }
   .footer-grid { grid-template-columns: 1fr; }
   .container-x { padding: 0 16px; }
   .section { padding: 56px 0; }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { atividades } from "@/lib/rup";
+import { atividades, categorias } from "@/lib/rup";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -43,14 +43,14 @@ const opcoesGrupo = {
 type FormData = {
   perfil: string; tipoObra: string; preocupacao: string; controle: string;
   atividadeId: string; quantidade: string; trabalhadores: string;
-  horasPorDia: string; dias: string; custoHora: string;
+  horasPorDia: string; dias: string; custoEquipeDia: string;
   cidade: string; nome: string; whatsapp: string; email: string;
 };
 
 const init: FormData = {
   perfil: "", tipoObra: "", preocupacao: "", controle: "", atividadeId: "",
   quantidade: "", trabalhadores: "", horasPorDia: "", dias: "",
-  custoHora: "", cidade: "", nome: "", whatsapp: "", email: "",
+  custoEquipeDia: "", cidade: "", nome: "", whatsapp: "", email: "",
 };
 
 const stepTitles = [
@@ -92,6 +92,35 @@ function Chip({ label, selected, onClick }: { label: string; selected: boolean; 
       }}
     >
       {label}
+    </button>
+  );
+}
+
+/* ── Botão de atividade ──────────────────────────────────────────── */
+function AtividadeButton({ at, selected, onClick }: {
+  at: { id: string; nome: string; unidade: string };
+  selected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "13px 18px",
+        background: selected ? "var(--gold-500)" : "rgba(243,236,222,0.04)",
+        color: selected ? "#0b1226" : "#f3ecde",
+        border: selected ? "1px solid var(--gold-500)" : "1px solid rgba(243,236,222,0.15)",
+        borderRadius: "var(--radius-md)",
+        cursor: "pointer",
+        transition: "all 0.15s",
+        fontFamily: "var(--font-body)",
+        textAlign: "left",
+        width: "100%",
+      }}
+    >
+      <span style={{ fontWeight: 600, fontSize: 14 }}>{at.nome}</span>
+      <span style={{ fontSize: 12, opacity: 0.7, flexShrink: 0, marginLeft: 12 }}>{at.unidade}</span>
     </button>
   );
 }
@@ -148,8 +177,11 @@ export default function DiagnosticoPage() {
 
   const atSelecionada = atividades.find((a) => a.id === form.atividadeId);
   const atividadesFiltradas = busca.trim()
-    ? atividades.filter((a) => a.nome.toLowerCase().includes(busca.toLowerCase()) || a.categoria.toLowerCase().includes(busca.toLowerCase()))
-    : atividades;
+    ? atividades.filter((a) =>
+        a.nome.toLowerCase().includes(busca.toLowerCase()) ||
+        a.categoria.toLowerCase().includes(busca.toLowerCase())
+      )
+    : [];
 
   function next() { setStep((s) => Math.min(s + 1, TOTAL_STEPS)); }
   function back() { setStep((s) => Math.max(s - 1, 1)); setErro(""); }
@@ -166,6 +198,13 @@ export default function DiagnosticoPage() {
       return;
     }
     setLoading(true);
+
+    // Converte custo equipe/dia → custo por HH para o cálculo
+    const custoEquipeDia = form.custoEquipeDia ? Number(form.custoEquipeDia.replace(",", ".")) : null;
+    const trab = Number(form.trabalhadores);
+    const hpd = Number(form.horasPorDia.replace(",", "."));
+    const custoHora = custoEquipeDia && trab > 0 && hpd > 0 ? custoEquipeDia / trab / hpd : null;
+
     try {
       const res = await fetch("/api/calcular", {
         method: "POST",
@@ -173,10 +212,10 @@ export default function DiagnosticoPage() {
         body: JSON.stringify({
           ...form,
           quantidade: Number(form.quantidade.replace(",", ".")),
-          trabalhadores: Number(form.trabalhadores),
-          horasPorDia: Number(form.horasPorDia.replace(",", ".")),
+          trabalhadores: trab,
+          horasPorDia: hpd,
           dias: Number(form.dias),
-          custoHora: form.custoHora ? Number(form.custoHora.replace(",", ".")) : null,
+          custoHora,
         }),
       });
       const data = await res.json();
@@ -221,7 +260,6 @@ export default function DiagnosticoPage() {
               </span>
               <span style={{ fontSize: 11, fontWeight: 700, color: "var(--gold-500)", letterSpacing: "0.1em" }}>{pct}%</span>
             </div>
-            {/* Progress bar */}
             <div style={{ height: 3, background: "rgba(243,236,222,0.1)", borderRadius: 4, overflow: "hidden" }}>
               <div style={{ height: "100%", width: `${pct}%`, background: "var(--gold-500)", borderRadius: 4, transition: "width 0.35s ease" }} />
             </div>
@@ -276,7 +314,7 @@ export default function DiagnosticoPage() {
           </div>
         )}
 
-        {/* Step 5 — Atividade */}
+        {/* Step 5 — Atividade agrupada por categoria */}
         {step === 5 && (
           <div>
             <input
@@ -285,7 +323,7 @@ export default function DiagnosticoPage() {
               value={busca}
               onChange={e => setBusca(e.target.value)}
               style={{
-                width: "100%", height: 46, padding: "0 16px", marginBottom: 16,
+                width: "100%", height: 46, padding: "0 16px", marginBottom: 20,
                 background: "rgba(243,236,222,0.06)",
                 border: "1px solid rgba(243,236,222,0.2)",
                 borderRadius: "var(--radius-md)",
@@ -296,29 +334,53 @@ export default function DiagnosticoPage() {
               onFocus={e => (e.target.style.borderColor = "var(--gold-500)")}
               onBlur={e => (e.target.style.borderColor = "rgba(243,236,222,0.2)")}
             />
-            <div style={{ display: "grid", gap: 8 }}>
-              {atividadesFiltradas.map((at) => (
-                <button
-                  key={at.id}
-                  onClick={() => autoNext("atividadeId", at.id)}
-                  style={{
-                    display: "flex", alignItems: "center", justifyContent: "space-between",
-                    padding: "13px 18px",
-                    background: form.atividadeId === at.id ? "var(--gold-500)" : "rgba(243,236,222,0.04)",
-                    color: form.atividadeId === at.id ? "#0b1226" : "#f3ecde",
-                    border: form.atividadeId === at.id ? "1px solid var(--gold-500)" : "1px solid rgba(243,236,222,0.15)",
-                    borderRadius: "var(--radius-md)",
-                    cursor: "pointer",
-                    transition: "all 0.15s",
-                    fontFamily: "var(--font-body)",
-                    textAlign: "left",
-                  }}
-                >
-                  <span style={{ fontWeight: 600, fontSize: 14 }}>{at.nome}</span>
-                  <span style={{ fontSize: 12, opacity: 0.7, flexShrink: 0, marginLeft: 12 }}>{at.unidade}</span>
-                </button>
-              ))}
-            </div>
+
+            {/* Resultado da busca — lista plana */}
+            {busca.trim() ? (
+              <div style={{ display: "grid", gap: 8 }}>
+                {atividadesFiltradas.length === 0 ? (
+                  <p style={{ color: "rgba(243,236,222,0.5)", fontSize: 14, textAlign: "center", padding: "24px 0" }}>
+                    Nenhuma atividade encontrada.
+                  </p>
+                ) : atividadesFiltradas.map((at) => (
+                  <AtividadeButton
+                    key={at.id} at={at}
+                    selected={form.atividadeId === at.id}
+                    onClick={() => autoNext("atividadeId", at.id)}
+                  />
+                ))}
+              </div>
+            ) : (
+              /* Lista agrupada por categoria */
+              <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+                {categorias.map((cat) => {
+                  const grupo = atividades.filter((a) => a.categoria === cat);
+                  return (
+                    <div key={cat}>
+                      <div style={{
+                        fontSize: 10, fontWeight: 700, letterSpacing: "0.24em",
+                        textTransform: "uppercase", color: "var(--gold-500)",
+                        paddingBottom: 10, marginBottom: 10,
+                        borderBottom: "1px solid rgba(201,165,116,0.2)",
+                        display: "flex", alignItems: "center", gap: 8,
+                      }}>
+                        <span style={{ width: 18, height: 1, background: "var(--gold-500)", display: "inline-block" }} />
+                        {cat}
+                      </div>
+                      <div style={{ display: "grid", gap: 8 }}>
+                        {grupo.map((at) => (
+                          <AtividadeButton
+                            key={at.id} at={at}
+                            selected={form.atividadeId === at.id}
+                            onClick={() => autoNext("atividadeId", at.id)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
@@ -362,11 +424,11 @@ export default function DiagnosticoPage() {
                   inputMode="numeric" required
                 />
                 <Campo
-                  label="Custo médio por HH (R$)"
-                  placeholder="Ex: 35 — opcional"
-                  value={form.custoHora} onChange={(v) => set("custoHora", v)}
+                  label="Custo da equipe por dia (R$)"
+                  placeholder="Ex: 800 — opcional"
+                  value={form.custoEquipeDia} onChange={(v) => set("custoEquipeDia", v)}
                   inputMode="decimal"
-                  hint="Calcula o impacto financeiro se informado"
+                  hint="Total pago por dia para toda a equipe. Calcula o impacto financeiro."
                 />
                 <Campo
                   label="Cidade"
