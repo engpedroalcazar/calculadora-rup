@@ -29,7 +29,7 @@ export function LiveViewerWidget() {
       borderRadius: 4,
       zIndex: 39,
       display: "flex", alignItems: "center", gap: 14,
-      maxWidth: 340,
+      maxWidth: "min(340px, calc(100vw - 40px))",
       boxShadow: "0 16px 40px -12px rgba(0,0,0,0.5)",
     }}>
       <div style={{ position: "relative", flexShrink: 0 }}>
@@ -88,7 +88,7 @@ export function RecentActivityToaster() {
       borderRadius: 4,
       zIndex: 39,
       display: "flex", alignItems: "center", gap: 14,
-      maxWidth: 360,
+      maxWidth: "min(360px, calc(100vw - 40px))",
       boxShadow: "0 20px 50px -12px rgba(0,0,0,0.55)",
       transform: visible ? "translateY(0)" : "translateY(140%)",
       opacity: visible ? 1 : 0,

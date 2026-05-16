@@ -18,8 +18,8 @@ function Logo({ size = 36 }: { size?: number }) {
     <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
       <Image src="/assets/obraradar-mark-clean.png" alt="Obra Radar" width={Math.round(size * 1.4)} height={Math.round(size * 0.9)} style={{ display: "block", objectFit: "contain" }} />
       <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
-        <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 17, color: "#f3ecde", letterSpacing: "0.03em", textTransform: "uppercase" }}>OBRA RADAR</span>
-        <span style={{ fontFamily: "var(--font-body)", fontSize: 8, fontWeight: 700, color: "rgba(243,236,222,0.5)", letterSpacing: "0.26em", marginTop: 4, textTransform: "uppercase" }}>Diagnóstico · RUP</span>
+        <span className="logo-title" style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 17, color: "#f3ecde", letterSpacing: "0.03em", textTransform: "uppercase" }}>OBRA RADAR</span>
+        <span className="logo-subtitle" style={{ fontFamily: "var(--font-body)", fontSize: 8, fontWeight: 700, color: "rgba(243,236,222,0.5)", letterSpacing: "0.26em", marginTop: 4, textTransform: "uppercase" }}>Diagnóstico · RUP</span>
       </div>
     </div>
   );
@@ -69,14 +69,16 @@ function HeroLanding() {
         </h1>
 
         {/* Fórmula RUP como bloco visual central */}
-        <div style={{ margin: "52px auto 0", maxWidth: 440 }}>
-          <div className="display" style={{ fontSize: "clamp(18px, 3.5vw, 30px)", color: "rgba(243,236,222,0.9)", letterSpacing: "0.05em" }}>
+        <div style={{ margin: "52px auto 0", maxWidth: 440, padding: "0 16px" }}>
+          <div className="display" style={{ fontSize: "clamp(16px, 3.5vw, 30px)", color: "rgba(243,236,222,0.9)", letterSpacing: "0.05em" }}>
             CUSTO EQUIPE/DIA
           </div>
-          <div style={{ position: "relative", margin: "14px auto", maxWidth: 320, height: 2, background: "var(--gold-500)" }}>
-            <span className="display" style={{ position: "absolute", right: -52, top: "50%", transform: "translateY(-50%)", fontSize: "clamp(26px, 4vw, 44px)", color: "var(--gold-500)", lineHeight: 1 }}>RUP</span>
+          {/* Linha de fração + label RUP — inline para não vazar */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, margin: "14px 0" }}>
+            <div style={{ flex: 1, maxWidth: 280, height: 2, background: "var(--gold-500)" }} />
+            <span className="display" style={{ fontSize: "clamp(26px, 4vw, 44px)", color: "var(--gold-500)", lineHeight: 1, flexShrink: 0 }}>RUP</span>
           </div>
-          <div className="display" style={{ fontSize: "clamp(18px, 3.5vw, 30px)", color: "rgba(243,236,222,0.9)", letterSpacing: "0.05em" }}>
+          <div className="display" style={{ fontSize: "clamp(16px, 3.5vw, 30px)", color: "rgba(243,236,222,0.9)", letterSpacing: "0.05em" }}>
             QTD. EXECUTADA
           </div>
           <div style={{ marginTop: 14, fontSize: 11, letterSpacing: "0.2em", color: "rgba(243,236,222,0.35)", textTransform: "uppercase", fontWeight: 600 }}>
@@ -146,11 +148,11 @@ function MetodoRUPSection() {
         <div className="metodo-formula-grid">
           <div style={{ padding: "24px 28px", background: "rgba(11,18,38,0.06)", borderRadius: "var(--radius-md)", borderLeft: "3px solid var(--gold-600)" }}>
             <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.14em", color: "var(--gold-600)", fontWeight: 700, textTransform: "uppercase", marginBottom: 10 }}>HH Total</div>
-            <div style={{ fontFamily: "var(--font-display)", fontSize: 22, color: "var(--ink-900)" }}>Trabalhadores × Horas/dia × Dias</div>
+            <div className="formula-text" style={{ fontFamily: "var(--font-display)", fontSize: 22, color: "var(--ink-900)", wordBreak: "break-word" }}>Trabalhadores × Horas/dia × Dias</div>
           </div>
           <div style={{ padding: "24px 28px", background: "rgba(11,18,38,0.06)", borderRadius: "var(--radius-md)", borderLeft: "3px solid var(--ink-700)" }}>
             <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.14em", color: "var(--ink-700)", fontWeight: 700, textTransform: "uppercase", marginBottom: 10 }}>Desvio (%)</div>
-            <div style={{ fontFamily: "var(--font-display)", fontSize: 22, color: "var(--ink-900)" }}>(RUP real − RUP ref) ÷ RUP ref × 100</div>
+            <div className="formula-text" style={{ fontFamily: "var(--font-display)", fontSize: 22, color: "var(--ink-900)", wordBreak: "break-word" }}>(RUP real − RUP ref) ÷ RUP ref × 100</div>
           </div>
         </div>
 

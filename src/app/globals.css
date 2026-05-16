@@ -80,12 +80,19 @@
   --shadow-cta: 0 8px 24px -10px rgba(201, 165, 116, 0.55);
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; min-width: 0; }
 
 html, body {
   margin: 0;
   padding: 0;
   min-height: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img, svg, video, canvas, iframe {
+  max-width: 100%;
+  height: auto;
 }
 
 body {
@@ -325,9 +332,16 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
   .footer-grid { grid-template-columns: 1fr; }
   .container-x { padding: 0 16px; }
   .section { padding: 56px 0; }
-  /* Nav CTA compacto */
-  .nav-cta-text { display: none; }
-  .nav-cta-icon { display: inline-flex !important; }
+  /* Fórmulas menores */
+  .formula-text { font-size: 15px !important; }
+}
+
+/* Nav em telas muito pequenas (320-400px) */
+@media (max-width: 400px) {
+  .logo-subtitle { display: none; }
+  .logo-title { font-size: 14px !important; }
+  .nav-cta-text { display: none !important; }
+  .nav-cta-icon { display: inline !important; }
 }
 
 @media print {
