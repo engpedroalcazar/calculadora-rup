@@ -13,7 +13,6 @@ function Logo() {
 export default function ContatoPage() {
   return (
     <div style={{ minHeight: "100vh", background: "var(--navy-900)", color: "#f3ecde", fontFamily: "var(--font-body)" }}>
-      {/* Nav */}
       <header style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(11,18,38,0.92)", borderBottom: "1px solid rgba(255,255,255,0.08)", backdropFilter: "blur(14px)" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
           <Link href="/"><Logo /></Link>
@@ -37,27 +36,21 @@ export default function ContatoPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20 }}>
           {[
             {
-              icon: (
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>
-              ),
+              icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>,
               label: "E-mail",
-              value: "contato@alcazarengenharia.com",
-              href: "mailto:contato@alcazarengenharia.com",
+              value: "eng.pedroalcazar@gmail.com",
+              href: "mailto:eng.pedroalcazar@gmail.com",
               sub: "Respondemos em até 1 dia útil",
             },
             {
-              icon: (
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              ),
+              icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
               label: "WhatsApp",
-              value: "Atendimento via WhatsApp",
-              href: "https://wa.me/5511999999999",
-              sub: "Seg–Sex, 08h–18h (horário de Brasília)",
+              value: "(44) 99821-5665",
+              href: "https://wa.me/5544998215665",
+              sub: "Seg–Sex, 08h–18h · Maringá/PR",
             },
             {
-              icon: (
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-              ),
+              icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>,
               label: "Horário de atendimento",
               value: "Segunda a Sexta",
               href: undefined,
@@ -80,8 +73,8 @@ export default function ContatoPage() {
         <div style={{ marginTop: 56, padding: "28px 32px", background: "rgba(201,165,116,0.06)", border: "1px solid rgba(201,165,116,0.2)", borderRadius: 12 }}>
           <p style={{ fontSize: 13, color: "rgba(243,236,222,0.55)", lineHeight: 1.7, margin: 0 }}>
             <strong style={{ color: "rgba(243,236,222,0.8)" }}>Obra Radar</strong> é operado por{" "}
-            <a href="https://alcazarengenharia.com" target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold-500)" }}>Alcazar Engenharia</a>{" "}
-            · CNPJ 64.288.947/0001-34 · Itu/SP
+            <a href="https://alcazarengenharia.com" target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold-500)" }}>Alcazar Engenharia</a>
+            {" "}· P H Alcazar Brito Engenharia · CNPJ 61.288.947/0001-34 · Maringá/PR
           </p>
         </div>
 

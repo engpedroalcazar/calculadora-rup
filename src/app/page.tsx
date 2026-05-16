@@ -283,7 +283,7 @@ function SiteFooter() {
         </div>
         <div style={{ marginTop: 48, paddingTop: 20, borderTop: "1px solid var(--navy-line)", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 10, color: "rgba(243,236,222,0.3)", fontSize: 12 }}>
           <span>© 2026 OBRA RADAR — Engenharia de Produtividade</span>
-          <span style={{ letterSpacing: "0.16em", textTransform: "uppercase", fontWeight: 600 }}>CNPJ 64.288.947/0001-34</span>
+          <span style={{ letterSpacing: "0.16em", textTransform: "uppercase", fontWeight: 600 }}>CNPJ 61.288.947/0001-34</span>
         </div>
       </div>
     </footer>

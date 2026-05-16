@@ -1,6 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
 
+const EMPRESA = "P H Alcazar Brito Engenharia";
+const FANTASIA = "Alcazar Engenharia";
+const CNPJ = "61.288.947/0001-34";
+const CIDADE = "Maringá/PR";
+const EMAIL = "eng.pedroalcazar@gmail.com";
+const WHATSAPP = "(44) 99821-5665";
+
 function Logo() {
   return (
     <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
@@ -27,7 +34,6 @@ export default function TermosPage() {
   const updated = "16 de maio de 2026";
   return (
     <div style={{ minHeight: "100vh", background: "var(--navy-900)", color: "#f3ecde", fontFamily: "var(--font-body)" }}>
-      {/* Nav */}
       <header style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(11,18,38,0.92)", borderBottom: "1px solid rgba(255,255,255,0.08)", backdropFilter: "blur(14px)" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
           <Link href="/"><Logo /></Link>
@@ -38,7 +44,6 @@ export default function TermosPage() {
       </header>
 
       <div style={{ maxWidth: 860, margin: "0 auto", padding: "64px 24px 96px" }}>
-        {/* Header */}
         <div style={{ marginBottom: 56 }}>
           <p style={{ fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--gold-500)", fontWeight: 700, marginBottom: 16 }}>
             Documentação Legal
@@ -47,12 +52,12 @@ export default function TermosPage() {
             Termos de Uso e Política de Privacidade
           </h1>
           <p style={{ fontSize: 14, color: "rgba(243,236,222,0.45)" }}>
-            Última atualização: {updated} · CNPJ 64.288.947/0001-34
+            Última atualização: {updated} · CNPJ {CNPJ}
           </p>
         </div>
 
         <Section title="1. Sobre o Obra Radar">
-          <p>O <strong style={{ color: "#f3ecde" }}>Obra Radar</strong> é uma plataforma de diagnóstico de produtividade de mão de obra para a construção civil, operada por Alcazar Engenharia (CNPJ 64.288.947/0001-34), com sede em Itu/SP. A plataforma permite que engenheiros, mestres de obras e gestores calculem a Razão Unitária de Produção (RUP) de frentes de serviço e obtenham laudos técnicos comparativos com benchmarks normativos.</p>
+          <p>O <strong style={{ color: "#f3ecde" }}>Obra Radar</strong> é uma plataforma de diagnóstico de produtividade de mão de obra para a construção civil, operada por <strong style={{ color: "#f3ecde" }}>{EMPRESA}</strong> (nome fantasia: {FANTASIA}), CNPJ {CNPJ}, {CIDADE}. A plataforma permite que engenheiros, mestres de obras e gestores calculem a Razão Unitária de Produção (RUP) de frentes de serviço e obtenham laudos técnicos comparativos com benchmarks normativos.</p>
           <p style={{ marginTop: 12 }}>Ao acessar e utilizar o Obra Radar, você declara ter lido, compreendido e concordado com estes Termos de Uso e com a Política de Privacidade aqui descritos.</p>
         </Section>
 
@@ -65,7 +70,7 @@ export default function TermosPage() {
         <Section title="3. Pagamentos e reembolsos">
           <p>Os pagamentos são processados exclusivamente por meio do <strong style={{ color: "#f3ecde" }}>Mercado Pago</strong>, plataforma certificada PCI-DSS. O Obra Radar não armazena dados de cartão de crédito ou informações bancárias. Todos os dados financeiros transitam e são gerenciados integralmente pelo provedor de pagamento.</p>
           <p style={{ marginTop: 12 }}>Após a liberação do laudo, não há reembolso automático, uma vez que o produto digital é entregue instantaneamente. Em caso de falha técnica comprovada (laudo não gerado após pagamento confirmado), o usuário poderá solicitar reembolso integral pelo canal de suporte em até 7 dias corridos.</p>
-          <p style={{ marginTop: 12 }}>Para solicitações de reembolso: <strong style={{ color: "#f3ecde" }}>contato@alcazarengenharia.com</strong></p>
+          <p style={{ marginTop: 12 }}>Para solicitações de reembolso: <strong style={{ color: "#f3ecde" }}>{EMAIL}</strong> ou WhatsApp {WHATSAPP}.</p>
         </Section>
 
         <Section title="4. Coleta e uso de dados">
@@ -92,7 +97,7 @@ export default function TermosPage() {
             <li>Acesso administrativo protegido por token seguro</li>
             <li>Sem armazenamento local de senhas ou dados de pagamento</li>
           </ul>
-          <p style={{ marginTop: 12 }}>Nenhum sistema de segurança é absoluto. Em caso de incidente de segurança que afete dados pessoais, notificaremos os usuários afetados nos prazos previstos pela LGPD.</p>
+          <p style={{ marginTop: 12 }}>Em caso de incidente de segurança que afete dados pessoais, notificaremos os usuários afetados nos prazos previstos pela LGPD.</p>
         </Section>
 
         <Section title="7. Direitos do titular (LGPD)">
@@ -104,7 +109,7 @@ export default function TermosPage() {
             <li>Solicitar exclusão dos dados pessoais (exceto quando há obrigação legal de retenção)</li>
             <li>Revogar o consentimento para tratamento de dados, quando aplicável</li>
           </ul>
-          <p style={{ marginTop: 12 }}>Solicitações podem ser feitas por e-mail em <strong style={{ color: "#f3ecde" }}>contato@alcazarengenharia.com</strong>. Atendemos em até 15 dias úteis.</p>
+          <p style={{ marginTop: 12 }}>Solicitações pelo e-mail <strong style={{ color: "#f3ecde" }}>{EMAIL}</strong> ou WhatsApp {WHATSAPP}. Atendemos em até 15 dias úteis.</p>
         </Section>
 
         <Section title="8. Limitação de responsabilidade">
@@ -113,7 +118,7 @@ export default function TermosPage() {
         </Section>
 
         <Section title="9. Propriedade intelectual">
-          <p>Todo o conteúdo da plataforma — textos, interface, algoritmos de cálculo, banco de atividades e laudos gerados — é de propriedade exclusiva de Alcazar Engenharia. É vedada a reprodução, distribuição ou uso comercial sem autorização expressa e por escrito.</p>
+          <p>Todo o conteúdo da plataforma — textos, interface, algoritmos de cálculo, banco de atividades e laudos gerados — é de propriedade exclusiva de {EMPRESA} (nome fantasia: {FANTASIA}). É vedada a reprodução, distribuição ou uso comercial sem autorização expressa e por escrito.</p>
         </Section>
 
         <Section title="10. Alterações nestes Termos">
@@ -121,13 +126,13 @@ export default function TermosPage() {
         </Section>
 
         <Section title="11. Foro e legislação aplicável">
-          <p>Estes Termos são regidos pelas leis brasileiras. Fica eleito o foro da Comarca de Itu/SP para dirimir quaisquer controvérsias decorrentes deste instrumento, com renúncia expressa a qualquer outro foro, por mais privilegiado que seja.</p>
+          <p>Estes Termos são regidos pelas leis brasileiras. Fica eleito o foro da Comarca de {CIDADE} para dirimir quaisquer controvérsias decorrentes deste instrumento, com renúncia expressa a qualquer outro foro, por mais privilegiado que seja.</p>
         </Section>
 
-        {/* Rodapé do documento */}
         <div style={{ marginTop: 64, padding: "24px 28px", background: "rgba(243,236,222,0.03)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: 12, fontSize: 13, color: "rgba(243,236,222,0.5)", lineHeight: 1.7 }}>
-          <strong style={{ color: "rgba(243,236,222,0.7)" }}>Alcazar Engenharia</strong> · CNPJ 64.288.947/0001-34 · Itu/SP{" "}
-          · <a href="mailto:contato@alcazarengenharia.com" style={{ color: "var(--gold-500)" }}>contato@alcazarengenharia.com</a>
+          <strong style={{ color: "rgba(243,236,222,0.7)" }}>{FANTASIA}</strong>
+          {" "}· {EMPRESA} · CNPJ {CNPJ} · {CIDADE}
+          {" "}· <a href={`mailto:${EMAIL}`} style={{ color: "var(--gold-500)" }}>{EMAIL}</a>
           {" "}· <a href="https://alcazarengenharia.com" target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold-500)" }}>alcazarengenharia.com</a>
         </div>
       </div>

@@ -10,10 +10,12 @@ function Logo() {
   );
 }
 
+const EMAIL = "eng.pedroalcazar@gmail.com";
+
 const TOPICS = [
   {
     title: "Não recebi o laudo após o pagamento",
-    body: "O laudo é liberado automaticamente após a confirmação do Mercado Pago. Caso não apareça em até 5 minutos, verifique o e-mail informado no quiz (incluindo a pasta de spam). Se o problema persistir, entre em contato pelo e-mail contato@alcazarengenharia.com informando o e-mail usado e a data/hora do pagamento.",
+    body: `O laudo é liberado automaticamente após a confirmação do Mercado Pago. Caso não apareça em até 5 minutos, verifique o e-mail informado no quiz (incluindo a pasta de spam). Se o problema persistir, entre em contato pelo e-mail ${EMAIL} informando o e-mail usado e a data/hora do pagamento.`,
   },
   {
     title: "Paguei mas o link do relatório não abre",
@@ -21,7 +23,7 @@ const TOPICS = [
   },
   {
     title: "Quero solicitar reembolso",
-    body: "Por se tratar de produto digital entregue instantaneamente, não há reembolso automático. Em caso de falha técnica comprovada (laudo não gerado após pagamento confirmado), aceitamos solicitação em até 7 dias corridos pelo e-mail contato@alcazarengenharia.com. Analisamos cada caso individualmente.",
+    body: `Por se tratar de produto digital entregue instantaneamente, não há reembolso automático. Em caso de falha técnica comprovada (laudo não gerado após pagamento confirmado), aceitamos solicitação em até 7 dias corridos pelo e-mail ${EMAIL}. Analisamos cada caso individualmente.`,
   },
   {
     title: "Os dados que informei estão incorretos",
@@ -40,7 +42,6 @@ const TOPICS = [
 export default function SuportePage() {
   return (
     <div style={{ minHeight: "100vh", background: "var(--navy-900)", color: "#f3ecde", fontFamily: "var(--font-body)" }}>
-      {/* Nav */}
       <header style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(11,18,38,0.92)", borderBottom: "1px solid rgba(255,255,255,0.08)", backdropFilter: "blur(14px)" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
           <Link href="/"><Logo /></Link>
@@ -76,15 +77,19 @@ export default function SuportePage() {
           <div style={{ borderTop: "1px solid rgba(243,236,222,0.1)", paddingTop: 40 }} />
         </div>
 
-        {/* CTA de contato */}
         <div style={{ marginTop: 8, padding: "36px 36px", background: "rgba(201,165,116,0.06)", border: "1px solid rgba(201,165,116,0.2)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 24 }}>
           <div>
             <p style={{ fontFamily: "var(--font-display)", fontSize: 22, color: "#f3ecde", textTransform: "uppercase", marginBottom: 8 }}>Não encontrou o que precisava?</p>
             <p style={{ fontSize: 14, color: "rgba(243,236,222,0.55)", margin: 0 }}>Nossa equipe responde em até 1 dia útil.</p>
           </div>
-          <a href="mailto:contato@alcazarengenharia.com" style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "14px 24px", background: "var(--cta-500)", color: "#fff", fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 14, borderRadius: 10, textDecoration: "none", whiteSpace: "nowrap" }}>
-            Falar com o suporte
-          </a>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <a href={`https://wa.me/5544998215665`} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "14px 24px", background: "var(--cta-500)", color: "#fff", fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 14, borderRadius: 10, textDecoration: "none", whiteSpace: "nowrap" }}>
+              WhatsApp (44) 99821-5665
+            </a>
+            <a href={`mailto:${EMAIL}`} style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "14px 24px", background: "transparent", color: "var(--gold-500)", border: "1px solid rgba(201,165,116,0.4)", fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 14, borderRadius: 10, textDecoration: "none", whiteSpace: "nowrap" }}>
+              E-mail
+            </a>
+          </div>
         </div>
 
         <div style={{ marginTop: 32, display: "flex", gap: 16, flexWrap: "wrap" }}>
