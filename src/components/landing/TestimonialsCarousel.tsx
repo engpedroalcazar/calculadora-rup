@@ -1,0 +1,116 @@
+"use client";
+import { useEffect, useState } from "react";
+
+const TESTIMONIALS = [
+  { name: "Pedro Henrique Alcazar", role: "Engenheiro Civil e de Segurança do Trabalho", company: "Alcazar Engenharia · Itu/SP", initials: "PA", quote: "Eu uso o Obra Radar antes de aceitar qualquer obra grande. Em 3 minutos eu sei se a equipe que o cliente tem hoje aguenta o cronograma — ou se eu vou ter que renegociar antes de assinar.", metric: "−18% em HH na frente revisada", serviceTag: "Engenharia diagnóstica" },
+  { name: "Camila Tavares", role: "Gerente de Planejamento", company: "Construtora Vértice · Curitiba/PR", initials: "CT", quote: "Levei o PDF do laudo pra reunião de diretoria e ele virou base do meu replanejamento. Eu não precisei explicar nada — o documento já explicava tudo, com norma e tudo.", metric: "Replanejou 4 frentes em 2 semanas", serviceTag: "Residencial vertical" },
+  { name: "Mestre Joelson Ramos", role: "Mestre de Obras há 22 anos", company: "Obra particular · Goiânia/GO", initials: "JR", quote: "Eu confesso que não acreditava muito em \"app de engenheiro\". Mas o relatório bateu certinho com o que eu via no canteiro. A turma estava perdendo tempo no transporte de bloco, e o Obra Radar foi direto nisso.", metric: "Reorganizou logística da frente", serviceTag: "Alvenaria estrutural" },
+  { name: "Renata Coelho Andrade", role: "Coordenadora de Produção", company: "Grupo Pilar Construções · Recife/PE", initials: "RC", quote: "A gente fazia controle de RUP em planilha. Levava 3 dias pra fechar o mês de uma frente. Hoje eu rodo o quiz e tenho a foto da semana antes do café. Não tem volta.", metric: "Economia de 3 dias / fechamento", serviceTag: "Industrial" },
+  { name: "Eng. Rogério Alencar", role: "Diretor Técnico", company: "Zenith Engenharia · Belo Horizonte/MG", initials: "RA", quote: "Comprei o laudo achando que ia ser genérico, mas o detalhamento por fator (equipe, sequenciamento, ferramentas, supervisão) me deu argumento técnico pra cortar uma frente que estava sangrando.", metric: "R$ 92mil/mês de economia", serviceTag: "Infraestrutura" },
+  { name: "Fernando Bittencourt", role: "Engenheiro de Obra", company: "Construtora Bittencourt · Porto Alegre/RS", initials: "FB", quote: "Sou cético com ferramenta digital, mas R$ 39,90 pra ter um laudo que normalmente custa R$ 4mil de consultoria é difícil discutir. Já comprei pra 6 frentes diferentes.", metric: "6 laudos em 4 meses", serviceTag: "Comercial" },
+  { name: "Aline Furtado", role: "Engenheira de Segurança", company: "Furtado & Associados · Florianópolis/SC", initials: "AF", quote: "Uso pra cruzar com o PCMAT. Se a RUP está fora de faixa, geralmente tem horas extras escondidas e isso pesa em fiscalização do MTE. Salvou minha pele duas vezes.", metric: "Identificou risco trabalhista", serviceTag: "Segurança do trabalho" },
+  { name: "Daniel Prado", role: "Sócio-Gestor", company: "DP Construtora · Salvador/BA", initials: "DP", quote: "A minha filha que é engenheira nova me apresentou. Achei que ia ser complicado. Não foi. Respondi as 6 perguntas, vi a severidade CRÍTICO da fundação e mandei reverter a equipe no dia seguinte.", metric: "Recuperou 11 dias de cronograma", serviceTag: "Residencial horizontal" },
+  { name: "Mariana de Souza Lima", role: "Coordenadora de Obras", company: "Lima Engenharia · Brasília/DF", initials: "ML", quote: "Trabalho com obra pública, então cada hora-homem é fiscalizada. Ter um laudo independente da minha planilha interna deu uma camada de defesa que eu não tinha. A diretoria adorou.", metric: "Adotado como padrão interno", serviceTag: "Obra pública" },
+];
+
+function ArrowBtn({ onClick, dir }: { onClick: () => void; dir: "left" | "right" }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{ width: 48, height: 48, background: "transparent", border: "1px solid rgba(243,236,222,0.35)", borderRadius: "var(--radius-md)", color: "#f3ecde", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 160ms ease" }}
+      onMouseEnter={(e) => { e.currentTarget.style.background = "var(--gold-500)"; e.currentTarget.style.borderColor = "var(--gold-500)"; e.currentTarget.style.color = "#0b1226"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(243,236,222,0.35)"; e.currentTarget.style.color = "#f3ecde"; }}
+      aria-label={dir === "left" ? "Anterior" : "Próximo"}
+    >
+      {dir === "left"
+        ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M19 12H5"/><path d="M11 5l-7 7 7 7"/></svg>
+        : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>}
+    </button>
+  );
+}
+
+export function TestimonialsCarousel() {
+  const [idx, setIdx] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const total = TESTIMONIALS.length;
+
+  useEffect(() => {
+    if (paused) return;
+    const t = setInterval(() => setIdx((i) => (i + 1) % total), 7000);
+    return () => clearInterval(t);
+  }, [paused, total]);
+
+  const go = (dir: number) => setIdx((i) => (i + dir + total) % total);
+  const t = TESTIMONIALS[idx];
+
+  return (
+    <section className="section" style={{ background: "var(--navy-900)", overflow: "hidden", position: "relative" }} id="cases">
+      <div className="container-x">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 32, alignItems: "end", marginBottom: 48 }}>
+          <div>
+            <span className="t-label">QUEM JÁ ANALISOU SUA OBRA AQUI</span>
+            <h2 className="display display-xb" style={{ marginTop: 18, fontSize: "clamp(36px, 4.6vw, 60px)", color: "#f3ecde", maxWidth: 920 }}>
+              ENGENHEIROS, MESTRES DE OBRA E COORDENADORES QUE VIRARAM O JOGO COM{" "}
+              <span style={{ color: "var(--gold-500)" }}>UM LAUDO DE R$ 39,90</span>.
+            </h2>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 16 }}>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--gold-500)", letterSpacing: "0.2em" }}>
+              {String(idx + 1).padStart(2, "0")} <span style={{ color: "rgba(243,236,222,0.45)" }}>/ {String(total).padStart(2, "0")}</span>
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <ArrowBtn onClick={() => { go(-1); setPaused(true); }} dir="left" />
+              <ArrowBtn onClick={() => { go(1); setPaused(true); }} dir="right" />
+            </div>
+          </div>
+        </div>
+
+        <div
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          style={{ position: "relative", padding: "56px 64px", border: "1px solid var(--navy-line-strong)", background: "linear-gradient(135deg, rgba(201,165,116,0.04), rgba(255,255,255,0.01))", minHeight: 360, display: "grid", gridTemplateColumns: "auto 1fr auto", gap: 56, alignItems: "center" }}
+        >
+          {/* bracket corners */}
+          <span aria-hidden style={{ position: "absolute", width: 22, height: 22, top: 10, left: 10, borderTop: "1.2px solid #c9a574", borderLeft: "1.2px solid #c9a574", pointerEvents: "none" }} />
+          <span aria-hidden style={{ position: "absolute", width: 22, height: 22, top: 10, right: 10, borderTop: "1.2px solid #c9a574", borderRight: "1.2px solid #c9a574", pointerEvents: "none" }} />
+          <span aria-hidden style={{ position: "absolute", width: 22, height: 22, bottom: 10, left: 10, borderBottom: "1.2px solid #c9a574", borderLeft: "1.2px solid #c9a574", pointerEvents: "none" }} />
+          <span aria-hidden style={{ position: "absolute", width: 22, height: 22, bottom: 10, right: 10, borderBottom: "1.2px solid #c9a574", borderRight: "1.2px solid #c9a574", pointerEvents: "none" }} />
+
+          <div style={{ width: 96, height: 96, borderRadius: "50%", background: "rgba(201,165,116,0.1)", border: "1px solid var(--gold-line)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--gold-500)", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 32, letterSpacing: "0.02em" }}>{t.initials}</div>
+
+          <div>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 80, color: "var(--gold-500)", lineHeight: 0.6, marginBottom: 8 }}>"</div>
+            <p style={{ fontSize: "clamp(20px, 2vw, 26px)", lineHeight: 1.45, color: "#f3ecde", fontWeight: 400, margin: 0 }}>{t.quote}</p>
+            <div style={{ marginTop: 32, display: "flex", alignItems: "center", gap: 32, flexWrap: "wrap" }}>
+              <div>
+                <div className="display" style={{ fontSize: 18, color: "#f3ecde" }}>{t.name}</div>
+                <div style={{ marginTop: 6, fontSize: 12, color: "rgba(243,236,222,0.6)" }}>{t.role} · <span style={{ color: "rgba(243,236,222,0.85)" }}>{t.company}</span></div>
+              </div>
+              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", padding: "6px 12px", border: "1px solid var(--gold-line)", borderRadius: "var(--radius-md)", color: "var(--gold-500)" }}>{t.serviceTag}</span>
+            </div>
+          </div>
+
+          <div style={{ padding: "24px 28px", border: "1px solid var(--gold-500)", borderRadius: "var(--radius-md)", background: "rgba(201,165,116,0.08)", minWidth: 200, textAlign: "right" }}>
+            <div className="counter">RESULTADO</div>
+            <div className="display" style={{ marginTop: 10, fontSize: 22, color: "var(--gold-500)", lineHeight: 1.1 }}>{t.metric}</div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 36, display: "flex", justifyContent: "center", gap: 8 }}>
+          {TESTIMONIALS.map((_, i) => (
+            <button key={i} onClick={() => { setIdx(i); setPaused(true); }} style={{ width: i === idx ? 36 : 10, height: 4, background: i === idx ? "var(--gold-500)" : "rgba(243,236,222,0.2)", border: 0, padding: 0, cursor: "pointer", transition: "all 280ms ease" }} aria-label={`Depoimento ${i + 1}`} />
+          ))}
+        </div>
+
+        <div style={{ marginTop: 64, padding: "40px 0", borderTop: "1px solid var(--navy-line)", borderBottom: "1px solid var(--navy-line)", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 32 }}>
+          {[["2.840+", "Diagnósticos rodados"], ["61", "Atividades suportadas"], ["R$ 4.1M", "Em desvios detectados"], ["4,8", "Avaliação média (NPS)"]].map(([v, l]) => (
+            <div key={l}>
+              <div className="display display-xb" style={{ fontSize: 42, color: "var(--gold-500)", lineHeight: 1 }}>{v}</div>
+              <div style={{ marginTop: 10, fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", color: "rgba(243,236,222,0.65)", textTransform: "uppercase" }}>{l}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

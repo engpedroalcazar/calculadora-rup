@@ -1,0 +1,45 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Lead {
+  id            String   @id @default(cuid())
+  nome          String
+  whatsapp      String
+  email         String?
+  perfil        String?
+  tipoObra      String?
+  preocupacao   String?
+  controle      String?
+  cidade        String?
+
+  atividadeId   String
+  atividadeNome String
+  unidade       String
+  quantidade    Float
+  trabalhadores Int
+  horasPorDia   Float
+  dias          Int
+  custoHora     Float?
+
+  hhTotal       Float
+  rupReal       Float
+  rupRef        Float
+  desvio        Float
+  severidade    String
+
+  pago          Boolean  @default(false)
+  valor         Float?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([severidade])
+  @@index([pago])
+  @@index([createdAt])
+}
