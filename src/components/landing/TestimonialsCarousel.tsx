@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const TESTIMONIALS = [
   { name: "Pedro Henrique Alcazar", role: "Engenheiro Civil e de Segurança do Trabalho", company: "Alcazar Engenharia · Itu/SP", initials: "PA", quote: "Eu uso o Obra Radar antes de aceitar qualquer obra grande. Em 3 minutos eu sei se a equipe que o cliente tem hoje aguenta o cronograma — ou se eu vou ter que renegociar antes de assinar.", metric: "−18% em HH na frente revisada", serviceTag: "Engenharia diagnóstica" },
@@ -17,7 +17,7 @@ function ArrowBtn({ onClick, dir }: { onClick: () => void; dir: "left" | "right"
   return (
     <button
       onClick={onClick}
-      style={{ width: 48, height: 48, background: "transparent", border: "1px solid rgba(243,236,222,0.35)", borderRadius: "var(--radius-md)", color: "#f3ecde", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 160ms ease" }}
+      style={{ width: 48, height: 48, background: "transparent", border: "1px solid rgba(243,236,222,0.35)", borderRadius: "var(--radius-md)", color: "#f3ecde", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 160ms ease", flexShrink: 0 }}
       onMouseEnter={(e) => { e.currentTarget.style.background = "var(--gold-500)"; e.currentTarget.style.borderColor = "var(--gold-500)"; e.currentTarget.style.color = "#0b1226"; }}
       onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(243,236,222,0.35)"; e.currentTarget.style.color = "#f3ecde"; }}
       aria-label={dir === "left" ? "Anterior" : "Próximo"}
@@ -33,6 +33,7 @@ export function TestimonialsCarousel() {
   const [idx, setIdx] = useState(0);
   const [paused, setPaused] = useState(false);
   const total = TESTIMONIALS.length;
+  const touchStartX = useRef<number | null>(null);
 
   useEffect(() => {
     if (paused) return;
@@ -40,34 +41,51 @@ export function TestimonialsCarousel() {
     return () => clearInterval(t);
   }, [paused, total]);
 
-  const go = (dir: number) => setIdx((i) => (i + dir + total) % total);
+  const go = (dir: number) => { setIdx((i) => (i + dir + total) % total); setPaused(true); };
+
+  // Swipe support
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) go(diff > 0 ? 1 : -1);
+    touchStartX.current = null;
+  };
+
   const t = TESTIMONIALS[idx];
 
   return (
     <section className="section" style={{ background: "var(--navy-900)", overflow: "hidden", position: "relative" }} id="cases">
       <div className="container-x">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 32, alignItems: "end", marginBottom: 48 }}>
+        {/* Header — responsivo via classe CSS */}
+        <div className="testimonials-header" style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 32, alignItems: "end", marginBottom: 48 }}>
           <div>
             <span className="t-label">QUEM JÁ ANALISOU SUA OBRA AQUI</span>
-            <h2 className="display display-xb" style={{ marginTop: 18, fontSize: "clamp(36px, 4.6vw, 60px)", color: "#f3ecde", maxWidth: 920 }}>
+            <h2 className="display display-xb" style={{ marginTop: 18, fontSize: "clamp(28px, 4.6vw, 60px)", color: "#f3ecde", maxWidth: 920 }}>
               ENGENHEIROS, MESTRES DE OBRA E COORDENADORES QUE VIRARAM O JOGO COM{" "}
               <span style={{ color: "var(--gold-500)" }}>UM LAUDO DE R$ 39,90</span>.
             </h2>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 16 }}>
+          <div className="testimonials-controls" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 16 }}>
             <div style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--gold-500)", letterSpacing: "0.2em" }}>
               {String(idx + 1).padStart(2, "0")} <span style={{ color: "rgba(243,236,222,0.45)" }}>/ {String(total).padStart(2, "0")}</span>
             </div>
             <div style={{ display: "flex", gap: 8 }}>
-              <ArrowBtn onClick={() => { go(-1); setPaused(true); }} dir="left" />
-              <ArrowBtn onClick={() => { go(1); setPaused(true); }} dir="right" />
+              <ArrowBtn onClick={() => go(-1)} dir="left" />
+              <ArrowBtn onClick={() => go(1)} dir="right" />
             </div>
           </div>
         </div>
 
+        {/* Card — swipe no mobile */}
         <div
+          className="testimonials-card"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
           style={{ position: "relative", padding: "56px 64px", border: "1px solid var(--navy-line-strong)", background: "linear-gradient(135deg, rgba(201,165,116,0.04), rgba(255,255,255,0.01))", minHeight: 360, display: "grid", gridTemplateColumns: "auto 1fr auto", gap: 56, alignItems: "center" }}
         >
           {/* bracket corners */}
@@ -76,11 +94,11 @@ export function TestimonialsCarousel() {
           <span aria-hidden style={{ position: "absolute", width: 22, height: 22, bottom: 10, left: 10, borderBottom: "1.2px solid #c9a574", borderLeft: "1.2px solid #c9a574", pointerEvents: "none" }} />
           <span aria-hidden style={{ position: "absolute", width: 22, height: 22, bottom: 10, right: 10, borderBottom: "1.2px solid #c9a574", borderRight: "1.2px solid #c9a574", pointerEvents: "none" }} />
 
-          <div style={{ width: 96, height: 96, borderRadius: "50%", background: "rgba(201,165,116,0.1)", border: "1px solid var(--gold-line)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--gold-500)", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 32, letterSpacing: "0.02em" }}>{t.initials}</div>
+          <div className="testimonials-avatar" style={{ width: 96, height: 96, borderRadius: "50%", background: "rgba(201,165,116,0.1)", border: "1px solid var(--gold-line)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--gold-500)", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 32, letterSpacing: "0.02em" }}>{t.initials}</div>
 
           <div>
             <div style={{ fontFamily: "var(--font-display)", fontSize: 80, color: "var(--gold-500)", lineHeight: 0.6, marginBottom: 8 }}>"</div>
-            <p style={{ fontSize: "clamp(20px, 2vw, 26px)", lineHeight: 1.45, color: "#f3ecde", fontWeight: 400, margin: 0 }}>{t.quote}</p>
+            <p style={{ fontSize: "clamp(16px, 2vw, 26px)", lineHeight: 1.45, color: "#f3ecde", fontWeight: 400, margin: 0 }}>{t.quote}</p>
             <div style={{ marginTop: 32, display: "flex", alignItems: "center", gap: 32, flexWrap: "wrap" }}>
               <div>
                 <div className="display" style={{ fontSize: 18, color: "#f3ecde" }}>{t.name}</div>
@@ -90,22 +108,24 @@ export function TestimonialsCarousel() {
             </div>
           </div>
 
-          <div style={{ padding: "24px 28px", border: "1px solid var(--gold-500)", borderRadius: "var(--radius-md)", background: "rgba(201,165,116,0.08)", minWidth: 200, textAlign: "right" }}>
+          <div className="testimonials-metric" style={{ padding: "24px 28px", border: "1px solid var(--gold-500)", borderRadius: "var(--radius-md)", background: "rgba(201,165,116,0.08)", minWidth: 200, textAlign: "right" }}>
             <div className="counter">RESULTADO</div>
             <div className="display" style={{ marginTop: 10, fontSize: 22, color: "var(--gold-500)", lineHeight: 1.1 }}>{t.metric}</div>
           </div>
         </div>
 
+        {/* Dots */}
         <div style={{ marginTop: 36, display: "flex", justifyContent: "center", gap: 8 }}>
           {TESTIMONIALS.map((_, i) => (
             <button key={i} onClick={() => { setIdx(i); setPaused(true); }} style={{ width: i === idx ? 36 : 10, height: 4, background: i === idx ? "var(--gold-500)" : "rgba(243,236,222,0.2)", border: 0, padding: 0, cursor: "pointer", transition: "all 280ms ease" }} aria-label={`Depoimento ${i + 1}`} />
           ))}
         </div>
 
-        <div style={{ marginTop: 64, padding: "40px 0", borderTop: "1px solid var(--navy-line)", borderBottom: "1px solid var(--navy-line)", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 32 }}>
+        {/* Stats — responsivo via classe CSS */}
+        <div className="testimonials-stats" style={{ marginTop: 64, padding: "40px 0", borderTop: "1px solid var(--navy-line)", borderBottom: "1px solid var(--navy-line)", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 32 }}>
           {[["2.840+", "Diagnósticos rodados"], ["61", "Atividades suportadas"], ["R$ 4.1M", "Em desvios detectados"], ["4,8", "Avaliação média (NPS)"]].map(([v, l]) => (
             <div key={l}>
-              <div className="display display-xb" style={{ fontSize: 42, color: "var(--gold-500)", lineHeight: 1 }}>{v}</div>
+              <div className="display display-xb" style={{ fontSize: "clamp(28px, 3.5vw, 42px)", color: "var(--gold-500)", lineHeight: 1 }}>{v}</div>
               <div style={{ marginTop: 10, fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", color: "rgba(243,236,222,0.65)", textTransform: "uppercase" }}>{l}</div>
             </div>
           ))}

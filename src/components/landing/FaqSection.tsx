@@ -38,7 +38,7 @@ export function FaqSection() {
   return (
     <section className="section" style={{ background: "var(--cream-100)", color: "var(--ink-900)" }} id="faq">
       <div className="container-x">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1.6fr", gap: 56, alignItems: "start" }}>
+        <div className="faq-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1.6fr", gap: 56, alignItems: "start" }}>
           <div>
             <span className="t-label t-label-on-cream">DÚVIDAS FREQUENTES</span>
             <h2 className="display" style={{ fontSize: "clamp(36px, 4.6vw, 60px)", margin: "20px 0 0", color: "var(--ink-900)", maxWidth: 420 }}>

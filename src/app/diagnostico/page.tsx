@@ -193,8 +193,12 @@ export default function DiagnosticoPage() {
 
   async function handleSubmit() {
     setErro("");
-    if (!form.nome.trim() || !form.whatsapp.trim() || !form.quantidade || !form.trabalhadores || !form.horasPorDia || !form.dias) {
+    if (!form.nome.trim() || !form.whatsapp.trim() || !form.email.trim() || !form.quantidade || !form.trabalhadores || !form.horasPorDia || !form.dias) {
       setErro("Preencha os campos obrigatórios marcados com *");
+      return;
+    }
+    if (!form.email.includes("@") || !form.email.includes(".")) {
+      setErro("Informe um e-mail válido para receber o relatório.");
       return;
     }
     setLoading(true);
@@ -445,7 +449,7 @@ export default function DiagnosticoPage() {
                 <Campo label="Seu nome" placeholder="João Paulo" value={form.nome} onChange={(v) => set("nome", v)} required />
                 <Campo label="WhatsApp" placeholder="(44) 99999-9999" value={form.whatsapp} onChange={(v) => set("whatsapp", v)} inputMode="tel" required />
                 <div style={{ gridColumn: "1 / -1" }}>
-                  <Campo label="E-mail" placeholder="seu@email.com (opcional)" value={form.email} onChange={(v) => set("email", v)} type="email" />
+                  <Campo label="E-mail" placeholder="seu@email.com" value={form.email} onChange={(v) => set("email", v)} type="email" required />
                 </div>
               </div>
             </div>

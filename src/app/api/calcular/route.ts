@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
       perfil, tipoObra, preocupacao, controle,
     } = body;
 
-    if (!atividadeId || !quantidade || !trabalhadores || !horasPorDia || !dias || !nome || !whatsapp) {
+    if (!atividadeId || !quantidade || !trabalhadores || !horasPorDia || !dias || !nome || !whatsapp || !email) {
       return NextResponse.json({ error: "Campos obrigatórios ausentes" }, { status: 400 });
     }
 

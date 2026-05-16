@@ -39,7 +39,9 @@ function TopNav() {
           ))}
         </div>
         <Link href="/diagnostico" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 20px", fontSize: 13, fontWeight: 700, letterSpacing: "0.04em", background: "transparent", color: "var(--gold-500)", border: "1px solid var(--gold-line)", borderRadius: "var(--radius-md)", whiteSpace: "nowrap", flexShrink: 0 }}>
-          Calcular grátis <ArrowRight />
+          <span className="nav-cta-text">Calcular grátis</span>
+          <span className="nav-cta-icon" style={{ display: "none" }}>Calcular</span>
+          <ArrowRight />
         </Link>
       </div>
     </nav>

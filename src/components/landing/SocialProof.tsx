@@ -61,7 +61,7 @@ export function RecentActivityToaster() {
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
-    const nextDelayMs = () => 45000 + Math.random() * 75000;
+    const nextDelayMs = () => 90000 + Math.random() * 120000;
     const show = () => {
       const item = RECENT_ACTIVITIES[idxRef.current % RECENT_ACTIVITIES.length];
       idxRef.current++;
@@ -72,7 +72,7 @@ export function RecentActivityToaster() {
         timer = setTimeout(show, nextDelayMs());
       }, 6500);
     };
-    timer = setTimeout(show, 12000);
+    timer = setTimeout(show, 30000);
     return () => clearTimeout(timer);
   }, []);
 

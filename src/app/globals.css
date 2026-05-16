@@ -304,6 +304,17 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
   .metodo-grid { grid-template-columns: 1fr; }
   .steps-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
+
+  /* Testimonials — mobile */
+  .testimonials-header { grid-template-columns: 1fr !important; gap: 20px !important; }
+  .testimonials-controls { flex-direction: row !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; }
+  .testimonials-card { grid-template-columns: 1fr !important; padding: 28px 20px !important; gap: 20px !important; min-height: auto !important; }
+  .testimonials-avatar { display: none !important; }
+  .testimonials-metric { min-width: unset !important; text-align: left !important; }
+  .testimonials-stats { grid-template-columns: repeat(2, 1fr) !important; gap: 24px !important; }
+
+  /* FAQ — mobile */
+  .faq-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
 }
 
 @media (max-width: 560px) {
@@ -314,6 +325,9 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
   .footer-grid { grid-template-columns: 1fr; }
   .container-x { padding: 0 16px; }
   .section { padding: 56px 0; }
+  /* Nav CTA compacto */
+  .nav-cta-text { display: none; }
+  .nav-cta-icon { display: inline-flex !important; }
 }
 
 @media print {
@@ -325,5 +339,11 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
   * { color: #0b1226 !important; }
   a[href]::after { content: ""; }
   .display { color: #0b1226 !important; }
+  /* PDF: evitar corte de conteúdo no meio — separar por páginas */
   section { padding: 24px 0 !important; page-break-inside: avoid; }
+  .relatorio-bloco { page-break-inside: avoid; break-inside: avoid; margin-bottom: 24px; }
+  .relatorio-secao { page-break-before: auto; break-before: auto; }
+  h2, h3 { page-break-after: avoid; break-after: avoid; }
+  table { page-break-inside: avoid; break-inside: avoid; }
+  .print-break { page-break-before: always; break-before: always; }
 }
