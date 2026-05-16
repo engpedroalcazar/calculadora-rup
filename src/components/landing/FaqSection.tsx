@@ -2,11 +2,11 @@
 import { useState } from "react";
 
 const FAQS = [
-  ["O diagnóstico é realmente gratuito?", "Sim. Você responde o quiz, recebe a prévia do diagnóstico com RUP calculada e severidade classificada — sem pagar nada. O relatório técnico completo, com recomendações detalhadas por serviço, é o produto pago (R$ 39,90)."],
-  ["De onde vem o benchmark de produtividade?", "Os valores de referência são consolidados a partir de TCPO (Tabelas de Composições de Preços para Orçamentos), normativas da ABNT e dados anonimizados de obras analisadas pela plataforma — segmentadas por tipo de obra e serviço."],
-  ["Posso usar o relatório como prova técnica?", "O relatório é um documento técnico de diagnóstico, não substitui laudo pericial assinado por engenheiro responsável. Pode (e deve) ser usado como subsídio em reuniões de obra, decisões de planejamento e revisão de cronograma."],
-  ["Quanto tempo leva o diagnóstico completo?", "Em média, 5 a 7 minutos para responder o quiz. O cálculo da RUP e a geração do relatório são imediatos. O PDF chega no seu e-mail e fica disponível na plataforma."],
-  ["Os meus dados de obra ficam seguros?", "Dados criptografados em trânsito e em repouso. Não compartilhamos dados identificáveis de obras com terceiros — apenas indicadores agregados, anonimizados, alimentam o benchmark."],
+  ["O quiz é gratuito, mas e o resultado?", "O quiz não tem custo. Ao finalizar, você recebe uma prévia com o nível de severidade da obra. Para acessar o laudo técnico completo — RUP calculada, desvio percentual em relação ao benchmark, diagnóstico por fator de influência, causas prováveis e recomendações de ação — o valor é R$ 39,90, pagamento único, sem assinatura. É o custo de aproximadamente uma hora de consultoria técnica, com o detalhamento de um relatório completo de produtividade."],
+  ["De onde vem o benchmark de produtividade?", "Os valores de referência partem de benchmarks consolidados na literatura técnica brasileira: TCPO, normativas ABNT e SINAPI. Além disso, a plataforma incorpora dados reais de campo, coletados de obras analisadas e anonimizados por tipo de serviço e categoria de obra. As referências refletem produtividade observada em canteiros reais, não apenas tabelas publicadas."],
+  ["Posso usar o relatório como subsídio técnico?", "O laudo é um documento técnico de diagnóstico de produtividade, não substitui laudo pericial com ART. É adequado como subsídio em reuniões de obra, revisões de cronograma, justificativas de aditivo e tomadas de decisão de gestão — foi desenvolvido com essa finalidade."],
+  ["Quanto tempo leva o diagnóstico completo?", "Em média, 3 a 5 minutos para responder o quiz. O cálculo da RUP e a geração do laudo são imediatos após a confirmação. O relatório fica disponível online para acesso a qualquer momento."],
+  ["Os dados da minha obra ficam seguros?", "Sim. Todos os dados são criptografados em trânsito e em repouso. Não compartilhamos informações identificáveis de obras ou empresas com terceiros. Apenas indicadores agregados e anonimizados alimentam o benchmark da plataforma, em conformidade com a LGPD."],
 ];
 
 function FaqItem({ q, a, idx, defaultOpen }: { q: string; a: string; idx: number; defaultOpen?: boolean }) {

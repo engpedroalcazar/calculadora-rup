@@ -187,7 +187,7 @@ function ComoFuncionaSection() {
         <div style={{ display: "flex", flexDirection: "column" }}>
           {steps.map((step, i) => (
             <div key={step.num} className="step-row" style={{ borderTop: "1px solid var(--navy-line)", paddingTop: 36, paddingBottom: 36 }}>
-              <div className="display" style={{ fontSize: "clamp(56px, 9vw, 96px)", color: "rgba(16,185,129,0.22)", lineHeight: 1, flexShrink: 0, minWidth: 120 }}>{step.num}</div>
+              <div className="display" style={{ fontSize: "clamp(56px, 9vw, 96px)", color: "var(--cta-500)", lineHeight: 1, flexShrink: 0, minWidth: 120 }}>{step.num}</div>
               <div style={{ flex: 1 }}>
                 <h3 className="display" style={{ fontSize: "clamp(22px, 3.5vw, 34px)", color: "#f3ecde", textTransform: "uppercase", marginBottom: 12 }}>{step.title}</h3>
                 <p style={{ fontSize: 15, lineHeight: 1.7, color: "rgba(243,236,222,0.6)", maxWidth: 560 }}>{step.body}</p>
@@ -268,20 +268,22 @@ function SiteFooter() {
             </p>
           </div>
           {[
-            { title: "Produto", links: ["Diagnóstico", "Método RUP", "Relatório", "Preço"] },
-            { title: "Empresa", links: ["Sobre", "Contato", "Suporte", "Termos"] },
+            { title: "Produto", items: [["Diagnóstico", "/diagnostico"], ["Método RUP", "#metodo"], ["Relatório", "#como"], ["Preço", "#como"]] },
+            { title: "Empresa", items: [["Sobre", "https://alcazarengenharia.com/"], ["Contato", "/contato"], ["Suporte", "/suporte"], ["Termos", "/termos"]] },
           ].map((col) => (
             <div key={col.title}>
               <div style={{ fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--gold-500)", fontWeight: 700, marginBottom: 16 }}>{col.title}</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {col.links.map((l) => <a key={l} href="#" style={{ fontSize: 14, color: "rgba(243,236,222,0.5)" }}>{l}</a>)}
+                {col.items.map(([label, href]) => (
+                  <a key={label} href={href} {...(href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})} style={{ fontSize: 14, color: "rgba(243,236,222,0.5)" }}>{label}</a>
+                ))}
               </div>
             </div>
           ))}
         </div>
         <div style={{ marginTop: 48, paddingTop: 20, borderTop: "1px solid var(--navy-line)", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 10, color: "rgba(243,236,222,0.3)", fontSize: 12 }}>
           <span>© 2026 OBRA RADAR — Engenharia de Produtividade</span>
-          <span style={{ letterSpacing: "0.16em", textTransform: "uppercase", fontWeight: 600 }}>CNPJ 00.000.000/0001-00</span>
+          <span style={{ letterSpacing: "0.16em", textTransform: "uppercase", fontWeight: 600 }}>CNPJ 64.288.947/0001-34</span>
         </div>
       </div>
     </footer>
