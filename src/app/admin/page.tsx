@@ -432,6 +432,12 @@ function AdminConteudo() {
   const [buscaInput, setBuscaInput] = useState("");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [activeModal, setActiveModal] = useState<ModalType>(null);
+  const [pacotes, setPacotes] = useState<PacoteItem[]>([]);
+
+  interface PacoteItem {
+    id: string; email: string; total: number; usado: number; restantes: number;
+    ativo: boolean; expirado: boolean; diasRestantes: number; expiraEm: string; createdAt: string;
+  }
 
   async function login(t: string) {
     setLoginLoading(true); setLoginErro("");
@@ -486,7 +492,14 @@ function AdminConteudo() {
     fetchLeads({ page, sev: sevFilter, pago: pagoFilter, busca, tok: token });
     fetch(`/api/admin/stats?token=${token}`).then(r => r.json()).then(setStats).catch(() => {});
     fetch(`/api/admin/analytics?token=${token}`).then(r => r.json()).then(setAnalytics).catch(() => {});
+    fetch(`/api/admin/pacotes?token=${token}`).then(r => r.json()).then(d => setPacotes(d.pacotes ?? [])).catch(() => {});
   }
+
+  useEffect(() => {
+    if (!autenticado) return;
+    fetch(`/api/admin/pacotes?token=${token}`).then(r => r.json()).then(d => setPacotes(d.pacotes ?? [])).catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autenticado]);
 
   const porSev = Object.fromEntries((stats?.porSeveridade ?? []).map(s => [s.severidade, s._count.id]));
   const receita = (stats?.pagos ?? 0) * 39.9;
@@ -721,6 +734,77 @@ function AdminConteudo() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* ── Pacotes 10x ─────────────────────────────── */}
+      <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+          <div>
+            <p className="font-black text-slate-950">Pacotes 10 Análises</p>
+            <p className="text-xs text-slate-500 mt-0.5">{pacotes.length} pacote{pacotes.length !== 1 ? "s" : ""} vendido{pacotes.length !== 1 ? "s" : ""}</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 rounded-full px-3 py-1">
+              {pacotes.filter(p => p.ativo && !p.expirado).length} ativos
+            </span>
+          </div>
+        </div>
+
+        {pacotes.length === 0 ? (
+          <div className="px-6 py-12 text-center text-slate-400 text-sm">Nenhum pacote vendido ainda.</div>
+        ) : (
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-slate-100 bg-slate-50 text-left">
+                {["Email", "Créditos", "Uso", "Expira", "Status", "Compra"].map(h => (
+                  <th key={h} className="px-4 py-3 font-semibold text-slate-500 whitespace-nowrap">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {pacotes.map(p => {
+                const pct = Math.round((p.usado / p.total) * 100);
+                const statusAtivo = p.ativo && !p.expirado;
+                return (
+                  <tr key={p.id} className="border-b border-slate-50 hover:bg-slate-50/50">
+                    <td className="px-4 py-3 font-medium text-slate-800">{p.email}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
+                          <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${pct}%` }} />
+                        </div>
+                        <span className="text-xs font-bold text-slate-700">{p.usado}/{p.total}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={cn("text-xs font-bold rounded-full px-2 py-0.5",
+                        p.restantes === 0 ? "bg-slate-100 text-slate-400" : "bg-emerald-100 text-emerald-700")}>
+                        {p.restantes} restante{p.restantes !== 1 ? "s" : ""}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">
+                      {new Date(p.expiraEm).toLocaleDateString("pt-BR")}
+                      {!p.expirado && p.diasRestantes <= 7 && (
+                        <span className="ml-1 text-orange-500 font-bold">({p.diasRestantes}d)</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={cn("text-xs font-bold rounded-full px-2 py-0.5",
+                        p.expirado ? "bg-red-100 text-red-600" :
+                        !p.ativo ? "bg-slate-100 text-slate-400" :
+                        "bg-emerald-100 text-emerald-700")}>
+                        {p.expirado ? "Expirado" : p.ativo ? "Ativo" : "Esgotado"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-slate-400 whitespace-nowrap">
+                      {new Date(p.createdAt).toLocaleDateString("pt-BR")}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
       </div>
 
       {/* Modals */}
