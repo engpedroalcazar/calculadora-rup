@@ -32,8 +32,9 @@ model Lead {
   desvio        Float
   severidade    String
 
-  pago          Boolean  @default(false)
-  valor         Float?
+  pago             Boolean  @default(false)
+  valor            Float?
+  metodoPagamento  String?   // "pix" | "credit_card" | "debit_card" | "ticket" | "manual"
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

@@ -18,7 +18,7 @@ interface Lead {
   perfil: string | null; tipoObra: string | null; cidade: string | null;
   atividadeNome: string; severidade: string; desvio: number;
   rupReal: number; rupRef: number; hhTotal: number;
-  pago: boolean; valor: number | null; createdAt: string;
+  pago: boolean; valor: number | null; metodoPagamento: string | null; createdAt: string;
 }
 interface LeadsResp { leads: Lead[]; total: number; page: number; limit: number; pages: number; }
 interface Stats {
@@ -34,6 +34,19 @@ interface Analytics {
   topAtividades: { nome: string; count: number }[];
   ticketMedio: number;
   totalReceita: number;
+}
+
+function MetodoBadge({ metodo }: { metodo: string | null }) {
+  if (!metodo) return <span className="text-xs text-slate-400">—</span>;
+  const map: Record<string, { label: string; cls: string }> = {
+    pix:         { label: "PIX",    cls: "bg-emerald-100 text-emerald-700" },
+    credit_card: { label: "Cartão", cls: "bg-blue-100 text-blue-700" },
+    debit_card:  { label: "Débito", cls: "bg-indigo-100 text-indigo-700" },
+    ticket:      { label: "Boleto", cls: "bg-yellow-100 text-yellow-700" },
+    manual:      { label: "Manual", cls: "bg-slate-100 text-slate-500" },
+  };
+  const m = map[metodo] ?? { label: metodo, cls: "bg-slate-100 text-slate-500" };
+  return <span className={cn("rounded-full px-2 py-0.5 text-xs font-bold", m.cls)}>{m.label}</span>;
 }
 
 const SEV_ORDER: Severidade[] = ["CRÍTICO", "ALERTA", "ATENÇÃO", "NORMAL", "VERIFICAR"];
@@ -386,6 +399,7 @@ function LeadModal({ lead, onClose, token }: { lead: Lead; onClose: () => void; 
           <div className="flex items-center justify-between">
             <span className={cn("rounded-full px-3 py-1 text-sm font-bold", lead.pago ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500")}>
               {lead.pago ? `✓ Pago${lead.valor ? ` · R$ ${lead.valor}` : ""}` : "Não pagou"}
+              {lead.metodoPagamento && <span className="ml-2"><MetodoBadge metodo={lead.metodoPagamento} /></span>}
             </span>
             <Link href={`/relatorio/${lead.id}?token=${token}`} target="_blank" className={cn("text-sm font-bold underline hover:no-underline", lead.pago ? "text-slate-950" : "text-slate-400")}>
               {lead.pago ? "Ver relatório →" : "Ver relatório (admin) →"}
@@ -633,7 +647,7 @@ function AdminConteudo() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50 text-left">
-                  {["Nº Pedido", "Nome", "Contato", "Cidade", "Atividade", "Severidade", "Desvio", "Pago", "Data", ""].map(h => (
+                  {["Nº Pedido", "Nome", "Contato", "Cidade", "Atividade", "Severidade", "Desvio", "Pago", "Método", "Data", ""].map(h => (
                     <th key={h} className="px-4 py-3 font-semibold text-slate-500 whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
@@ -670,9 +684,10 @@ function AdminConteudo() {
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <span className={cn("rounded-full px-2 py-0.5 text-xs font-bold", lead.pago ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500")}>
-                          {lead.pago ? "Sim" : "Não"}
+                          {lead.pago ? (lead.valor ? `R$ ${lead.valor}` : "Sim") : "Não"}
                         </span>
                       </td>
+                      <td className="px-4 py-3 whitespace-nowrap"><MetodoBadge metodo={lead.metodoPagamento} /></td>
                       <td className="px-4 py-3 text-slate-500 text-xs whitespace-nowrap">{new Date(lead.createdAt).toLocaleDateString("pt-BR")}</td>
                       <td className="px-4 py-3 whitespace-nowrap" onClick={e => e.stopPropagation()}>
                         <Link href={`/relatorio/${lead.id}?token=${token}`} target="_blank"

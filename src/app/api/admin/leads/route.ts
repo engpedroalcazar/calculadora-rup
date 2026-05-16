@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
           perfil: true, tipoObra: true, cidade: true,
           atividadeNome: true, severidade: true, desvio: true,
           rupReal: true, rupRef: true, hhTotal: true,
-          pago: true, valor: true, createdAt: true,
+          pago: true, valor: true, metodoPagamento: true, createdAt: true,
         },
       }),
     ]);

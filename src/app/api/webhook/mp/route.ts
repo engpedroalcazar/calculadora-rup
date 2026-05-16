@@ -37,7 +37,11 @@ export async function POST(req: NextRequest) {
 
     await prisma.lead.update({
       where: { id: leadId },
-      data: { pago: true, valor: payment.transaction_amount },
+      data: {
+        pago: true,
+        valor: payment.transaction_amount,
+        metodoPagamento: payment.payment_type_id ?? null, // "pix" | "credit_card" | "debit_card" | "ticket"
+      },
     });
 
     return NextResponse.json({ ok: true });

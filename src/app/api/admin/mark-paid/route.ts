@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { id, valor } = await req.json();
+    const { id, valor, metodoPagamento } = await req.json();
     if (!id) return NextResponse.json({ error: "ID obrigatório" }, { status: 400 });
 
     const lead = await prisma.lead.findUnique({ where: { id } });
@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
       data: {
         pago: true,
         valor: valor ?? Number(process.env.NEXT_PUBLIC_PRECO ?? 39.9),
+        metodoPagamento: metodoPagamento ?? "manual",
       },
     });
 
