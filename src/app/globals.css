@@ -305,7 +305,7 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
   .footer-cta-grid { grid-template-columns: 1fr; gap: 40px; }
   .metodo-formula-grid { grid-template-columns: 1fr; }
   .sev-bar-grid { grid-template-columns: repeat(5, 1fr); }
-  .nav-links { display: none; }
+  .nav-links { display: none !important; }
   .hero-grid { grid-template-columns: 1fr; }
   .hero-card-col { display: none; }
   .metodo-grid { grid-template-columns: 1fr; }
