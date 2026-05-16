@@ -1,6 +1,6 @@
 export const atividades = [
   // PRELIMINARES
-  { id: "P001", nome: "Locação de obra",                         categoria: "Preliminares",                unidade: "m²", rup: 0.08 },
+  { id: "P001", nome: "Locação de obra",                         categoria: "Preliminares",                unidade: "m²", rup: 0.15 },
   { id: "P002", nome: "Tapume de madeira",                       categoria: "Preliminares",                unidade: "m²", rup: 0.44 },
   { id: "P003", nome: "Escavação manual de vala",                categoria: "Preliminares",                unidade: "m³", rup: 3.20 },
   { id: "P004", nome: "Aterro compactado manual",                categoria: "Preliminares",                unidade: "m³", rup: 2.00 },
@@ -8,18 +8,18 @@ export const atividades = [
 
   // FUNDAÇÕES
   { id: "F001", nome: "Forma de sapata (madeira)",               categoria: "Fundações",                   unidade: "m²", rup: 1.45 },
-  { id: "F002", nome: "Armação sapata CA-50",                    categoria: "Fundações",                   unidade: "kg", rup: 0.06 },
+  { id: "F002", nome: "Armação sapata CA-50",                    categoria: "Fundações",                   unidade: "kg", rup: 0.15 },
   { id: "F003", nome: "Concretagem sapata (bomba)",              categoria: "Fundações",                   unidade: "m³", rup: 1.23 },
   { id: "F004", nome: "Viga baldrame — forma",                   categoria: "Fundações",                   unidade: "m²", rup: 1.60 },
-  { id: "F005", nome: "Viga baldrame — armação CA-50",           categoria: "Fundações",                   unidade: "kg", rup: 0.07 },
+  { id: "F005", nome: "Viga baldrame — armação CA-50",           categoria: "Fundações",                   unidade: "kg", rup: 0.15 },
   { id: "F006", nome: "Viga baldrame — concretagem",             categoria: "Fundações",                   unidade: "m³", rup: 1.45 },
 
   // ESTRUTURA
   { id: "E001", nome: "Forma de pilar (madeira reaproveitável)", categoria: "Estrutura",                   unidade: "m²", rup: 1.23 },
   { id: "E002", nome: "Forma de viga (madeira reaproveitável)",  categoria: "Estrutura",                   unidade: "m²", rup: 1.45 },
   { id: "E003", nome: "Forma de laje (madeira + escoramento)",   categoria: "Estrutura",                   unidade: "m²", rup: 0.89 },
-  { id: "E004", nome: "Armação CA-50 pilares e vigas",           categoria: "Estrutura",                   unidade: "kg", rup: 0.05 },
-  { id: "E005", nome: "Armação CA-60 laje nervurada",            categoria: "Estrutura",                   unidade: "kg", rup: 0.04 },
+  { id: "E004", nome: "Armação CA-50 pilares e vigas",           categoria: "Estrutura",                   unidade: "kg", rup: 0.15 },
+  { id: "E005", nome: "Armação CA-60 laje nervurada",            categoria: "Estrutura",                   unidade: "kg", rup: 0.15 },
   { id: "E006", nome: "Concretagem pilar (bomba)",               categoria: "Estrutura",                   unidade: "m³", rup: 1.78 },
   { id: "E007", nome: "Concretagem viga (bomba)",                categoria: "Estrutura",                   unidade: "m³", rup: 1.60 },
   { id: "E008", nome: "Concretagem laje (bomba)",                categoria: "Estrutura",                   unidade: "m³", rup: 1.33 },
@@ -36,7 +36,7 @@ export const atividades = [
   { id: "A007", nome: "Verga e contraverga moldada",             categoria: "Alvenaria",                   unidade: "m",  rup: 0.35 },
 
   // REVESTIMENTO INTERNO
-  { id: "RI001", nome: "Chapisco (rolo)",                        categoria: "Revestimento Interno",        unidade: "m²", rup: 0.10 },
+  { id: "RI001", nome: "Chapisco (rolo)",                        categoria: "Revestimento Interno",        unidade: "m²", rup: 0.15 },
   { id: "RI002", nome: "Chapisco convencional",                  categoria: "Revestimento Interno",        unidade: "m²", rup: 0.15 },
   { id: "RI003", nome: "Emboço interno",                         categoria: "Revestimento Interno",        unidade: "m²", rup: 0.50 },
   { id: "RI004", nome: "Reboco interno",                         categoria: "Revestimento Interno",        unidade: "m²", rup: 0.55 },
@@ -98,8 +98,8 @@ export const atividades = [
   { id: "EL004", nome: "Ponto de iluminação",                   categoria: "Inst. Elétricas",             unidade: "un", rup: 1.78 },
 
   // SERVIÇOS FINAIS
-  { id: "SF001", nome: "Limpeza fina de obra",                   categoria: "Serviços Finais",             unidade: "m²", rup: 0.12 },
-  { id: "SF002", nome: "Limpeza grossa (entulho)",               categoria: "Serviços Finais",             unidade: "m²", rup: 0.18 },
+  { id: "SF001", nome: "Limpeza fina de obra",                   categoria: "Serviços Finais",             unidade: "m²", rup: 0.15 },
+  { id: "SF002", nome: "Limpeza grossa (entulho)",               categoria: "Serviços Finais",             unidade: "m²", rup: 0.20 },
   { id: "SF003", nome: "Rejuntamento (piso e parede)",           categoria: "Serviços Finais",             unidade: "m²", rup: 0.35 },
   { id: "SF004", nome: "Silicone (arremate geral)",              categoria: "Serviços Finais",             unidade: "m",  rup: 0.20 },
 ] as const;
