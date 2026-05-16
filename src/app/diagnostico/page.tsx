@@ -193,6 +193,10 @@ export default function DiagnosticoPage() {
 
   async function handleSubmit() {
     setErro("");
+    if (!form.atividadeId) {
+      setErro("Selecione uma atividade antes de continuar. Volte ao passo anterior.");
+      return;
+    }
     if (!form.nome.trim() || !form.whatsapp.trim() || !form.email.trim() || !form.quantidade || !form.trabalhadores || !form.horasPorDia || !form.dias) {
       setErro("Preencha os campos obrigatórios marcados com *");
       return;
@@ -392,10 +396,18 @@ export default function DiagnosticoPage() {
         {step === 6 && (
           <div style={{ display: "grid", gap: 16 }}>
             {/* Atividade selecionada */}
-            {atSelecionada && (
+            {atSelecionada ? (
               <div style={{ padding: "14px 18px", background: "rgba(201,165,116,0.1)", border: "1px solid rgba(201,165,116,0.3)", borderRadius: "var(--radius-md)" }}>
                 <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.16em", color: "var(--gold-500)", textTransform: "uppercase" }}>Atividade selecionada</span>
                 <p style={{ margin: "4px 0 0", fontWeight: 700, fontSize: 15, color: "#f3ecde" }}>{atSelecionada.nome}</p>
+              </div>
+            ) : (
+              <div style={{ padding: "14px 18px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.35)", borderRadius: "var(--radius-md)", display: "flex", alignItems: "center", gap: 12 }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fca5a5" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                <div>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "#fca5a5" }}>Nenhuma atividade selecionada</span>
+                  <p style={{ margin: "2px 0 0", fontSize: 12, color: "rgba(252,165,165,0.7)" }}>Volte ao passo anterior e escolha uma atividade.</p>
+                </div>
               </div>
             )}
 
