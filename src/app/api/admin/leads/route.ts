@@ -77,3 +77,21 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Erro interno" }, { status: 500 });
   }
 }
+
+// DELETE — apaga leads por IDs (bulk)
+export async function DELETE(req: NextRequest) {
+  if (!checkAuth(req)) return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+
+  try {
+    const { ids } = await req.json();
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json({ error: "ids obrigatório (array)" }, { status: 400 });
+    }
+
+    const result = await prisma.lead.deleteMany({ where: { id: { in: ids } } });
+    return NextResponse.json({ ok: true, deleted: result.count });
+  } catch (err) {
+    console.error("[admin/leads DELETE]", err);
+    return NextResponse.json({ error: "Erro interno" }, { status: 500 });
+  }
+}
