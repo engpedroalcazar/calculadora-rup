@@ -81,7 +81,7 @@ export default async function RelatorioPage({
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "40px 20px 80px" }}>
 
         {/* Cabeçalho do relatório */}
-        <div style={{ marginBottom: 24, padding: 24, background: "rgba(243,236,222,0.03)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)" }}>
+        <div style={{ marginBottom: 24, padding: 24, background: "rgba(243,236,222,0.03)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)", breakInside: "avoid", pageBreakInside: "avoid" }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
             <div>
               <p style={{ margin: "0 0 6px", fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--gold-500)" }}>Relatório de Produtividade</p>
@@ -107,7 +107,7 @@ export default async function RelatorioPage({
         {/* Métricas */}
         <div style={{ marginBottom: 24, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12 }}>
           {metricas.map(({ label, value, sub }) => (
-            <div key={label} style={{ padding: 18, background: "rgba(243,236,222,0.03)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)" }}>
+            <div key={label} style={{ padding: 18, background: "rgba(243,236,222,0.03)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)", breakInside: "avoid", pageBreakInside: "avoid" }}>
               <p style={{ margin: "0 0 4px", fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gold-500)" }}>{label}</p>
               <p style={{ margin: "0 0 4px", fontFamily: "var(--font-display)", fontSize: 20, color: "#f3ecde", lineHeight: 1.1, wordBreak: "break-word" }}>{value}</p>
               <p style={{ margin: 0, fontSize: 11, color: "rgba(243,236,222,0.45)" }}>{sub}</p>
@@ -116,7 +116,7 @@ export default async function RelatorioPage({
         </div>
 
         {/* Diagnóstico */}
-        <div style={{ marginBottom: 20, padding: 24, background: "rgba(243,236,222,0.03)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)" }}>
+        <div className="relatorio-bloco" style={{ marginBottom: 20, padding: 24, background: "rgba(243,236,222,0.03)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)", breakInside: "avoid", pageBreakInside: "avoid" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold-500)" strokeWidth="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
             <p style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 16, color: "#f3ecde", letterSpacing: "0.04em" }}>DIAGNÓSTICO AUTOMÁTICO</p>
@@ -130,11 +130,11 @@ export default async function RelatorioPage({
 
         {/* Causas */}
         {diagnostico.causas.length > 0 && (
-          <div style={{ marginBottom: 20, padding: 24, background: "rgba(243,236,222,0.03)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)" }}>
+          <div className="relatorio-bloco" style={{ marginBottom: 20, padding: 24, background: "rgba(243,236,222,0.03)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)", breakInside: "avoid", pageBreakInside: "avoid" }}>
             <p style={{ margin: "0 0 16px", fontFamily: "var(--font-display)", fontSize: 16, color: "#f3ecde", letterSpacing: "0.04em" }}>CAUSAS MAIS PROVÁVEIS</p>
             <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 10 }}>
               {diagnostico.causas.map((c) => (
-                <li key={c} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14, color: "rgba(243,236,222,0.8)" }}>
+                <li key={c} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14, color: "rgba(243,236,222,0.8)", breakInside: "avoid", pageBreakInside: "avoid" }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d4a04a" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}><path d="M12 3l10 18H2z"/><path d="M12 10v5"/><circle cx="12" cy="18" r="0.8" fill="#d4a04a"/></svg>
                   {c}
                 </li>
@@ -144,11 +144,11 @@ export default async function RelatorioPage({
         )}
 
         {/* Ações */}
-        <div style={{ marginBottom: 20, padding: 24, background: "rgba(201,165,116,0.06)", border: "1px solid var(--gold-line)", borderRadius: "var(--radius-md)" }}>
+        <div className="relatorio-bloco" style={{ marginBottom: 20, padding: 24, background: "rgba(201,165,116,0.06)", border: "1px solid var(--gold-line)", borderRadius: "var(--radius-md)", breakInside: "avoid", pageBreakInside: "avoid" }}>
           <p style={{ margin: "0 0 16px", fontFamily: "var(--font-display)", fontSize: 16, color: "#f3ecde", letterSpacing: "0.04em" }}>AÇÕES RECOMENDADAS</p>
           <ol style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 12 }}>
             {diagnostico.acoes.map((a, i) => (
-              <li key={a} style={{ display: "flex", alignItems: "flex-start", gap: 14, fontSize: 14, color: "rgba(243,236,222,0.8)" }}>
+              <li key={a} style={{ display: "flex", alignItems: "flex-start", gap: 14, fontSize: 14, color: "rgba(243,236,222,0.8)", breakInside: "avoid", pageBreakInside: "avoid" }}>
                 <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 26, height: 26, flexShrink: 0, borderRadius: "50%", background: "var(--gold-500)", color: "#0b1226", fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700 }}>
                   {i + 1}
                 </span>
@@ -159,7 +159,7 @@ export default async function RelatorioPage({
         </div>
 
         {/* Dados do lançamento */}
-        <div style={{ marginBottom: 20, padding: 24, background: "rgba(243,236,222,0.03)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)" }}>
+        <div className="relatorio-bloco" style={{ marginBottom: 20, padding: 24, background: "rgba(243,236,222,0.03)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)", breakInside: "avoid", pageBreakInside: "avoid" }}>
           <p style={{ margin: "0 0 16px", fontFamily: "var(--font-display)", fontSize: 16, color: "#f3ecde", letterSpacing: "0.04em" }}>DADOS DO LANÇAMENTO</p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 0 }}>
             {[
