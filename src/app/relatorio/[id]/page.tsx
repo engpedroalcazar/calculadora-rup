@@ -11,12 +11,21 @@ const sevColor: Record<Severidade, string> = {
   VERIFICAR: "#6b8fb5", NORMAL: "#74a87a", ATENÇÃO: "#d4a04a", ALERTA: "#d97c4a", CRÍTICO: "#c95a4a",
 };
 
-export default async function RelatorioPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function RelatorioPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ token?: string }>;
+}) {
   const { id } = await params;
+  const { token } = await searchParams;
   const lead = await prisma.lead.findUnique({ where: { id } }).catch(() => null);
 
   if (!lead) notFound();
-  if (!lead.pago) redirect(`/checkout?id=${id}`);
+
+  const isAdmin = token === process.env.ADMIN_TOKEN;
+  if (!lead.pago && !isAdmin) redirect(`/checkout?id=${id}`);
 
   const resultado = calcularRUP({
     atividadeId: lead.atividadeId,
@@ -50,6 +59,13 @@ export default async function RelatorioPage({ params }: { params: Promise<{ id: 
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--navy-900)", color: "#f3ecde", fontFamily: "var(--font-body)" }}>
+
+      {/* Admin banner */}
+      {isAdmin && !lead.pago && (
+        <div style={{ background: "#1a2a1a", borderBottom: "1px solid rgba(116,168,122,0.4)", padding: "8px 20px", textAlign: "center", fontSize: 12, color: "#74a87a", fontWeight: 600, letterSpacing: "0.08em" }}>
+          👁 VISUALIZAÇÃO ADMIN — Lead não pagou. Apenas você vê este relatório.
+        </div>
+      )}
 
       {/* Header */}
       <header style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(11,18,38,0.92)", borderBottom: "1px solid var(--navy-line)", backdropFilter: "blur(12px)" }} className="print:hidden">

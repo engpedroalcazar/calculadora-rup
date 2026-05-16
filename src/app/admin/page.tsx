@@ -188,15 +188,16 @@ function LeadModal({ lead, onClose, token }: { lead: Lead; onClose: () => void; 
             )}>
               {lead.pago ? `✓ Pago${lead.valor ? ` · R$ ${lead.valor}` : ""}` : "Não pagou"}
             </span>
-            {lead.pago && (
-              <Link
-                href={`/relatorio/${lead.id}?token=${token}`}
-                target="_blank"
-                className="text-sm font-bold text-slate-950 underline hover:no-underline"
-              >
-                Ver relatório →
-              </Link>
-            )}
+            <Link
+              href={`/relatorio/${lead.id}?token=${token}`}
+              target="_blank"
+              className={cn(
+                "text-sm font-bold underline hover:no-underline",
+                lead.pago ? "text-slate-950" : "text-slate-400",
+              )}
+            >
+              {lead.pago ? "Ver relatório →" : "Ver relatório (admin) →"}
+            </Link>
           </div>
         </div>
       </div>
@@ -524,18 +525,19 @@ function AdminConteudo() {
                   <th className="px-4 py-3 font-semibold text-slate-500 whitespace-nowrap">Desvio</th>
                   <th className="px-4 py-3 font-semibold text-slate-500 whitespace-nowrap">Pago</th>
                   <th className="px-4 py-3 font-semibold text-slate-500 whitespace-nowrap">Data</th>
+                  <th className="px-4 py-3 font-semibold text-slate-500 whitespace-nowrap"></th>
                 </tr>
               </thead>
               <tbody>
                 {leadsLoading ? (
                   <tr>
-                    <td colSpan={8} className="px-6 py-16 text-center">
+                    <td colSpan={9} className="px-6 py-16 text-center">
                       <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-slate-200 border-t-slate-950" />
                     </td>
                   </tr>
                 ) : leads.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-6 py-16 text-center text-slate-400">
+                    <td colSpan={9} className="px-6 py-16 text-center text-slate-400">
                       {busca || sevFilter || pagoFilter ? "Nenhum lead encontrado para este filtro." : "Nenhum lead ainda."}
                     </td>
                   </tr>
@@ -580,6 +582,18 @@ function AdminConteudo() {
                         </td>
                         <td className="px-4 py-3 text-slate-500 text-xs whitespace-nowrap">
                           {new Date(lead.createdAt).toLocaleDateString("pt-BR")}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                          <Link
+                            href={`/relatorio/${lead.id}?token=${token}`}
+                            target="_blank"
+                            className={cn(
+                              "text-xs font-semibold underline hover:no-underline",
+                              lead.pago ? "text-emerald-700" : "text-slate-400",
+                            )}
+                          >
+                            {lead.pago ? "Relatório" : "Ver (admin)"}
+                          </Link>
                         </td>
                       </tr>
                     );
