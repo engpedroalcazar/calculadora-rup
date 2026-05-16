@@ -65,7 +65,7 @@ function HeroLanding() {
         <h1 className="display display-xb" style={{ fontSize: "clamp(36px, 6.5vw, 86px)", lineHeight: 0.95, color: "#f3ecde", maxWidth: 920, margin: "0 auto" }}>
           Descubra se sua equipe{" "}
           <span style={{ color: "var(--gold-500)" }}>está gerando perda</span>{" "}
-          na obra.
+          na obra
         </h1>
 
         {/* Fórmula RUP como bloco visual central */}
@@ -87,7 +87,7 @@ function HeroLanding() {
         </div>
 
         <p style={{ marginTop: 40, fontSize: 16, lineHeight: 1.68, color: "rgba(243,236,222,0.65)", maxWidth: 460, margin: "40px auto 0" }}>
-          Informe os dados da sua frente de serviço e receba o diagnóstico de RUP em menos de 3 minutos — grátis.
+          Informe os dados da sua frente de serviço e receba o diagnóstico de RUP, grátis, em menos de 3 minutos.
         </p>
 
         <div style={{ marginTop: 36 }}>
@@ -127,7 +127,7 @@ function MetodoRUPSection() {
             O QUE É <span style={{ color: "var(--gold-600)" }}>RUP</span>?
           </h2>
           <p style={{ marginTop: 18, fontSize: 15, lineHeight: 1.75, color: "var(--ink-500)" }}>
-            A <strong style={{ color: "var(--ink-900)" }}>Razão Unitária de Produção</strong> é o indicador que mede quantas horas‑homem foram necessárias para executar uma unidade de serviço. Quanto menor a RUP, mais produtiva a equipe. Comparada ao benchmark normativo, ela revela desvios que custam caro — e que raramente aparecem nos relatórios de avanço físico.
+            A <strong style={{ color: "var(--ink-900)" }}>Razão Unitária de Produção</strong> é o indicador que mede quantas horas‑homem foram necessárias para executar uma unidade de serviço. Quanto menor a RUP, mais produtiva a equipe. Comparada ao benchmark normativo, ela revela desvios que custam caro e que raramente aparecem nos relatórios de avanço físico.
           </p>
         </div>
 
@@ -180,14 +180,14 @@ function ComoFuncionaSection() {
         <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
           <span className="t-label" style={{ marginBottom: 20 }}>Como funciona</span>
           <h2 className="display" style={{ fontSize: "clamp(30px, 4.5vw, 56px)", color: "#f3ecde", marginBottom: 64 }}>
-            DO QUIZ AO LAUDO EM <span style={{ color: "var(--gold-500)" }}>3 PASSOS</span>.
+            DO QUIZ AO LAUDO EM <span style={{ color: "var(--gold-500)" }}>3 PASSOS</span>
           </h2>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
           {steps.map((step, i) => (
             <div key={step.num} className="step-row" style={{ borderTop: "1px solid var(--navy-line)", paddingTop: 36, paddingBottom: 36 }}>
-              <div className="display" style={{ fontSize: "clamp(56px, 9vw, 96px)", color: "rgba(201,165,116,0.18)", lineHeight: 1, flexShrink: 0, minWidth: 120 }}>{step.num}</div>
+              <div className="display" style={{ fontSize: "clamp(56px, 9vw, 96px)", color: "rgba(16,185,129,0.22)", lineHeight: 1, flexShrink: 0, minWidth: 120 }}>{step.num}</div>
               <div style={{ flex: 1 }}>
                 <h3 className="display" style={{ fontSize: "clamp(22px, 3.5vw, 34px)", color: "#f3ecde", textTransform: "uppercase", marginBottom: 12 }}>{step.title}</h3>
                 <p style={{ fontSize: 15, lineHeight: 1.7, color: "rgba(243,236,222,0.6)", maxWidth: 560 }}>{step.body}</p>
@@ -221,7 +221,7 @@ function FooterCTA() {
             <span className="t-label">Oferta de lançamento · Pagamento único</span>
             <h2 className="display display-xb" style={{ marginTop: 20, fontSize: "clamp(36px, 5.5vw, 72px)", color: "#f3ecde", lineHeight: 0.95 }}>
               AUDITE SUA OBRA POR MENOS DE{" "}
-              <span style={{ color: "var(--gold-500)" }}>R$ 40</span>.
+              <span style={{ color: "var(--gold-500)" }}>R$ 40</span>
             </h2>
             <p style={{ marginTop: 20, fontSize: 15, color: "rgba(243,236,222,0.55)", maxWidth: 420, lineHeight: 1.7 }}>
               O quiz é grátis. Você só paga se quiser desbloquear o laudo técnico completo.

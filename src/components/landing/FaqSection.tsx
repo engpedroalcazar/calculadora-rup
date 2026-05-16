@@ -42,7 +42,7 @@ export function FaqSection() {
           <div>
             <span className="t-label t-label-on-cream">DÚVIDAS FREQUENTES</span>
             <h2 className="display" style={{ fontSize: "clamp(36px, 4.6vw, 60px)", margin: "20px 0 0", color: "var(--ink-900)", maxWidth: 420 }}>
-              O QUE OS <span style={{ color: "var(--gold-500)" }}>ENGENHEIROS</span> PERGUNTAM ANTES DE COMEÇAR.
+              O QUE SE PERGUNTA <span style={{ color: "var(--gold-500)" }}>ANTES DE COMEÇAR</span>
             </h2>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 0, borderTop: "1px solid rgba(11,18,38,0.2)" }}>

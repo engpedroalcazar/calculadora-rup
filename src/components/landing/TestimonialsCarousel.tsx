@@ -2,15 +2,15 @@
 import { useEffect, useRef, useState } from "react";
 
 const TESTIMONIALS = [
-  { name: "Pedro Henrique Alcazar", role: "Engenheiro Civil e de Segurança do Trabalho", company: "Alcazar Engenharia · Itu/SP", initials: "PA", quote: "Eu uso o Obra Radar antes de aceitar qualquer obra grande. Em 3 minutos eu sei se a equipe que o cliente tem hoje aguenta o cronograma — ou se eu vou ter que renegociar antes de assinar.", metric: "−18% em HH na frente revisada", serviceTag: "Engenharia diagnóstica" },
-  { name: "Camila Tavares", role: "Gerente de Planejamento", company: "Construtora Vértice · Curitiba/PR", initials: "CT", quote: "Levei o PDF do laudo pra reunião de diretoria e ele virou base do meu replanejamento. Eu não precisei explicar nada — o documento já explicava tudo, com norma e tudo.", metric: "Replanejou 4 frentes em 2 semanas", serviceTag: "Residencial vertical" },
-  { name: "Mestre Joelson Ramos", role: "Mestre de Obras há 22 anos", company: "Obra particular · Goiânia/GO", initials: "JR", quote: "Eu confesso que não acreditava muito em \"app de engenheiro\". Mas o relatório bateu certinho com o que eu via no canteiro. A turma estava perdendo tempo no transporte de bloco, e o Obra Radar foi direto nisso.", metric: "Reorganizou logística da frente", serviceTag: "Alvenaria estrutural" },
-  { name: "Renata Coelho Andrade", role: "Coordenadora de Produção", company: "Grupo Pilar Construções · Recife/PE", initials: "RC", quote: "A gente fazia controle de RUP em planilha. Levava 3 dias pra fechar o mês de uma frente. Hoje eu rodo o quiz e tenho a foto da semana antes do café. Não tem volta.", metric: "Economia de 3 dias / fechamento", serviceTag: "Industrial" },
-  { name: "Eng. Rogério Alencar", role: "Diretor Técnico", company: "Zenith Engenharia · Belo Horizonte/MG", initials: "RA", quote: "Comprei o laudo achando que ia ser genérico, mas o detalhamento por fator (equipe, sequenciamento, ferramentas, supervisão) me deu argumento técnico pra cortar uma frente que estava sangrando.", metric: "R$ 92mil/mês de economia", serviceTag: "Infraestrutura" },
-  { name: "Fernando Bittencourt", role: "Engenheiro de Obra", company: "Construtora Bittencourt · Porto Alegre/RS", initials: "FB", quote: "Sou cético com ferramenta digital, mas R$ 39,90 pra ter um laudo que normalmente custa R$ 4mil de consultoria é difícil discutir. Já comprei pra 6 frentes diferentes.", metric: "6 laudos em 4 meses", serviceTag: "Comercial" },
-  { name: "Aline Furtado", role: "Engenheira de Segurança", company: "Furtado & Associados · Florianópolis/SC", initials: "AF", quote: "Uso pra cruzar com o PCMAT. Se a RUP está fora de faixa, geralmente tem horas extras escondidas e isso pesa em fiscalização do MTE. Salvou minha pele duas vezes.", metric: "Identificou risco trabalhista", serviceTag: "Segurança do trabalho" },
-  { name: "Daniel Prado", role: "Sócio-Gestor", company: "DP Construtora · Salvador/BA", initials: "DP", quote: "A minha filha que é engenheira nova me apresentou. Achei que ia ser complicado. Não foi. Respondi as 6 perguntas, vi a severidade CRÍTICO da fundação e mandei reverter a equipe no dia seguinte.", metric: "Recuperou 11 dias de cronograma", serviceTag: "Residencial horizontal" },
-  { name: "Mariana de Souza Lima", role: "Coordenadora de Obras", company: "Lima Engenharia · Brasília/DF", initials: "ML", quote: "Trabalho com obra pública, então cada hora-homem é fiscalizada. Ter um laudo independente da minha planilha interna deu uma camada de defesa que eu não tinha. A diretoria adorou.", metric: "Adotado como padrão interno", serviceTag: "Obra pública" },
+  { name: "Pedro Henrique Alcazar", role: "Engenheiro Civil e de Segurança do Trabalho", company: "Alcazar Engenharia · Itu/SP", initials: "PA", quote: "Uso o Obra Radar antes de aceitar qualquer contrato de obra maior. Em poucos minutos tenho clareza sobre a capacidade produtiva da equipe disponível e se o cronograma proposto é viável.", metric: "−18% em HH na frente revisada", serviceTag: "Engenharia diagnóstica" },
+  { name: "Camila Tavares", role: "Gerente de Planejamento", company: "Construtora Vértice · Curitiba/PR", initials: "CT", quote: "Levei o laudo para a reunião de diretoria e usamos como base do replanejamento. O documento já trazia os indicadores com referência normativa, o que facilitou muito a aprovação da revisão de cronograma.", metric: "Replanejou 4 frentes em 2 semanas", serviceTag: "Residencial vertical" },
+  { name: "Mestre Joelson Ramos", role: "Mestre de Obras há 22 anos", company: "Obra particular · Goiânia/GO", initials: "JR", quote: "Fui cético no início. Mas o relatório confirmou o que eu já observava no canteiro: o tempo perdido no transporte de material estava distorcendo a produção da frente de alvenaria.", metric: "Reorganizou logística da frente", serviceTag: "Alvenaria estrutural" },
+  { name: "Renata Coelho Andrade", role: "Coordenadora de Produção", company: "Pilar Engenharia · Recife/PE", initials: "RC", quote: "Antes levávamos três dias para fechar o controle de RUP de uma frente por mês. Com a plataforma, o levantamento sai no mesmo dia. Mudou o ritmo das nossas reuniões semanais de produção.", metric: "Economia de 3 dias/fechamento", serviceTag: "Industrial" },
+  { name: "Eng. Rogério Alencar", role: "Diretor Técnico", company: "Alencar Engenharia · Belo Horizonte/MG", initials: "RA", quote: "Comprei o laudo sem muita expectativa, mas o detalhamento por fator — equipe, sequenciamento, ferramentas, supervisão — me deu argumento técnico para intervir em uma frente com desvio expressivo de produtividade.", metric: "R$ 92mil/mês de economia", serviceTag: "Infraestrutura" },
+  { name: "Fernando Bittencourt", role: "Engenheiro de Obra", company: "Construtora Bittencourt · Porto Alegre/RS", initials: "FB", quote: "Sou cético com plataformas digitais em geral. Mas a relação entre o custo do laudo e o nível de detalhamento entregue é difícil de questionar. Já usei em seis frentes distintas nos últimos meses.", metric: "6 laudos em 4 meses", serviceTag: "Comercial" },
+  { name: "Aline Furtado", role: "Engenheira de Segurança", company: "Furtado & Associados · Florianópolis/SC", initials: "AF", quote: "Uso para cruzar com o PCMAT. Quando a RUP está fora de faixa, frequentemente há horas extras não formalizadas, o que gera exposição em fiscalizações do MTE. Já identifiquei duas situações assim antes de virarem problema.", metric: "Identificou risco trabalhista", serviceTag: "Segurança do trabalho" },
+  { name: "Daniel Prado", role: "Sócio-Gestor", company: "D. Prado Construtora · Salvador/BA", initials: "DP", quote: "Não esperava que fosse tão objetivo. Respondi as seis perguntas, identifiquei severidade crítica na fundação e tomei a decisão de redistribuir a equipe ainda naquela semana.", metric: "Recuperou 11 dias de cronograma", serviceTag: "Residencial horizontal" },
+  { name: "Mariana de Souza Lima", role: "Coordenadora de Obras", company: "Lima Engenharia · Brasília/DF", initials: "ML", quote: "Em obra pública, cada hora-homem é auditável. Um laudo baseado em benchmarks normativos complementa o controle interno e oferece respaldo técnico adicional para as decisões de produção.", metric: "Adotado como padrão interno", serviceTag: "Obra pública" },
 ];
 
 function ArrowBtn({ onClick, dir }: { onClick: () => void; dir: "left" | "right" }) {
@@ -64,8 +64,8 @@ export function TestimonialsCarousel() {
           <div>
             <span className="t-label">QUEM JÁ ANALISOU SUA OBRA AQUI</span>
             <h2 className="display display-xb" style={{ marginTop: 18, fontSize: "clamp(28px, 4.6vw, 60px)", color: "#f3ecde", maxWidth: 920 }}>
-              ENGENHEIROS, MESTRES DE OBRA E COORDENADORES QUE VIRARAM O JOGO COM{" "}
-              <span style={{ color: "var(--gold-500)" }}>UM LAUDO DE R$ 39,90</span>.
+              ENGENHEIROS, MESTRES DE OBRA E COORDENADORES QUE PASSARAM A GERIR COM{" "}
+              <span style={{ color: "var(--gold-500)" }}>DADOS REAIS DE PRODUTIVIDADE</span>
             </h2>
           </div>
           <div className="testimonials-controls" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 16 }}>
@@ -123,9 +123,9 @@ export function TestimonialsCarousel() {
 
         {/* Stats — responsivo via classe CSS */}
         <div className="testimonials-stats" style={{ marginTop: 64, padding: "40px 0", borderTop: "1px solid var(--navy-line)", borderBottom: "1px solid var(--navy-line)", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 32 }}>
-          {[["2.840+", "Diagnósticos rodados"], ["61", "Atividades suportadas"], ["R$ 4.1M", "Em desvios detectados"], ["4,8", "Avaliação média (NPS)"]].map(([v, l]) => (
+          {[["2.840+", "Diagnósticos rodados"], ["76", "Atividades suportadas"], ["R$ 4.1M", "Em desvios detectados"], ["4,8", "Avaliação média (NPS)"]].map(([v, l]) => (
             <div key={l}>
-              <div className="display display-xb" style={{ fontSize: "clamp(28px, 3.5vw, 42px)", color: "var(--gold-500)", lineHeight: 1 }}>{v}</div>
+              <div className="display display-xb" style={{ fontSize: "clamp(28px, 3.5vw, 42px)", color: "var(--cta-500)", lineHeight: 1 }}>{v}</div>
               <div style={{ marginTop: 10, fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", color: "rgba(243,236,222,0.65)", textTransform: "uppercase" }}>{l}</div>
             </div>
           ))}
