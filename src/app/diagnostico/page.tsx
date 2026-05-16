@@ -458,10 +458,10 @@ export default function DiagnosticoPage() {
             <div style={{ padding: 20, background: "rgba(243,236,222,0.03)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)" }}>
               <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--gold-500)", margin: "0 0 16px" }}>Seus dados</p>
               <div style={{ display: "grid", gap: 14, gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}>
-                <Campo label="Seu nome" placeholder="Pedro Alcazar" value={form.nome} onChange={(v) => set("nome", v)} required />
-                <Campo label="WhatsApp" placeholder="(44) 99821-5665" value={form.whatsapp} onChange={(v) => set("whatsapp", v)} inputMode="tel" required />
+                <Campo label="Seu nome" placeholder="Seu nome completo" value={form.nome} onChange={(v) => set("nome", v)} required />
+                <Campo label="WhatsApp" placeholder="(00) 00000-0000" value={form.whatsapp} onChange={(v) => set("whatsapp", v)} inputMode="tel" required />
                 <div style={{ gridColumn: "1 / -1" }}>
-                  <Campo label="E-mail" placeholder="pedrohenrique_alcazar@outlook.com" value={form.email} onChange={(v) => set("email", v)} type="email" required />
+                  <Campo label="E-mail" placeholder="seu@email.com" value={form.email} onChange={(v) => set("email", v)} type="email" required />
                 </div>
               </div>
             </div>
