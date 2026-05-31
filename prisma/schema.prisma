@@ -76,13 +76,17 @@ model OrcamentoLead {
   uf                 String
   cidade             String?
 
-  atividadeId        String
-  atividadeNome      String
-  unidade            String
-  quantidade         Float
-  padraoAcabamento   String
+  // Campos legados (Iter #1-#3 — orçamento single-item). A partir da Iter #4 a fonte
+  // de verdade dos serviços é `itens[]`. Mantidos nullable pra preservar leads antigos.
+  atividadeId        String?
+  atividadeNome     String?
+  unidade            String?
+  quantidade         Float?
+  padraoAcabamento   String?
+
   bdiPercentual      Float
 
+  // Totais agregados — soma dos itens (ou valor único, se lead legado single-item).
   custoMaterialTotal Float
   custoMaoObra       Float
   custoDireto        Float
@@ -92,9 +96,12 @@ model OrcamentoLead {
   prazoDias          Int
   equipeSugerida     Int
 
-  // Snapshot da lista de insumos calculada no momento do orçamento (JSON serializado).
-  // Mantemos junto com o lead pra preservar o resultado mesmo se a tabela Insumo mudar depois.
+  // Snapshot da lista de insumos CONSOLIDADA (todos os itens somados por código),
+  // calculada no momento do orçamento. Preserva o resultado mesmo se Insumo mudar depois.
   insumosCalculadosJson String?
+
+  // Itens do orçamento (1-N). Vazio em leads legados single-item.
+  itens              OrcamentoItem[]
 
   pago               Boolean  @default(false)
   valor              Float?
@@ -106,6 +113,37 @@ model OrcamentoLead {
   @@index([email])
   @@index([pago])
   @@index([createdAt])
+}
+
+model OrcamentoItem {
+  id                    String   @id @default(cuid())
+  leadId                String
+  lead                  OrcamentoLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  atividadeId           String
+  atividadeNome         String
+  unidade               String
+  categoriaProfissional String   // snapshot — usado pra agregar MO consolidada
+
+  quantidade            Float
+  padraoAcabamento      String   // per-item — cada serviço pode ter padrão próprio
+
+  custoMaterialTotal    Float
+  custoMaoObra          Float
+  custoDireto           Float
+  hhTotal               Float
+  prazoDias             Int
+
+  insumosCalculadosJson String?
+
+  // "manual" = cliente adicionou direto; "sugerido" = veio de combo aceito
+  origem                String   @default("manual")
+  comboTriggerId        String?  // se origem=sugerido, qual atividade gatilho
+
+  createdAt             DateTime @default(now())
+
+  @@index([leadId])
+  @@index([atividadeId])
 }
 
 model OrcamentoPacote {

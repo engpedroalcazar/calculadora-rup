@@ -9,6 +9,8 @@ import {
   Receipt,
   ArrowLeft,
   Package,
+  ChevronDown,
+  HardHat,
 } from "lucide-react";
 import { BrandHeader } from "@/components/orcamento/BrandHeader";
 import { SiteFooter } from "@/components/orcamento/SiteFooter";
@@ -18,11 +20,29 @@ import {
   formatarQuantidade,
   type InsumoCalculado,
 } from "@/lib/orcamento/calculo";
+import { buscarAtividade } from "@/data/orcamento/atividades-custo";
 import { DevUnlockButton } from "./DevUnlockButton";
 
 type Props = { params: Promise<{ leadId: string }> };
 
 const PREVIA_VISIVEL = 3;
+
+// Visão normalizada de um serviço do orçamento — funciona tanto pra leads
+// multi-item (Iter #4) quanto pra leads legados single-item (Iter #1-#3),
+// que são convertidos num item sintético derivado dos campos antigos do lead.
+type ItemView = {
+  atividadeNome: string;
+  unidade: string;
+  quantidade: number;
+  padraoAcabamento: string;
+  categoriaProfissional: string;
+  custoMaterialTotal: number;
+  custoMaoObra: number;
+  custoDireto: number;
+  hhTotal: number;
+  prazoDias: number;
+  insumos: InsumoCalculado[];
+};
 
 function parseInsumos(json: string | null): InsumoCalculado[] {
   if (!json) return [];
@@ -42,14 +62,67 @@ function rotuloPadrao(p: string): string {
 export default async function ResultadoPage({ params }: Props) {
   const { leadId } = await params;
 
-  const lead = await prisma.orcamentoLead.findUnique({ where: { id: leadId } });
+  const lead = await prisma.orcamentoLead.findUnique({
+    where: { id: leadId },
+    include: { itens: { orderBy: { createdAt: "asc" } } },
+  });
   if (!lead) notFound();
 
-  const insumos = parseInsumos(lead.insumosCalculadosJson);
-  const previaInsumos = insumos.slice(0, PREVIA_VISIVEL);
-  const insumosOcultos = insumos.slice(PREVIA_VISIVEL);
+  // Insumos consolidados (multi) ou da única atividade (legado) — sempre vêm do snapshot do lead.
+  const insumosConsolidados = parseInsumos(lead.insumosCalculadosJson);
+  const previaInsumos = insumosConsolidados.slice(0, PREVIA_VISIVEL);
+  const insumosOcultos = insumosConsolidados.slice(PREVIA_VISIVEL);
   const totalInsumosOcultos = insumosOcultos.length;
   const isDev = process.env.NODE_ENV !== "production";
+
+  // Normaliza pra uma lista de itens. Lead novo: usa lead.itens. Lead legado
+  // (sem itens, anterior à Iter #4): sintetiza 1 item dos campos antigos.
+  const itens: ItemView[] =
+    lead.itens.length > 0
+      ? lead.itens.map((it) => ({
+          atividadeNome: it.atividadeNome,
+          unidade: it.unidade,
+          quantidade: it.quantidade,
+          padraoAcabamento: it.padraoAcabamento,
+          categoriaProfissional: it.categoriaProfissional,
+          custoMaterialTotal: it.custoMaterialTotal,
+          custoMaoObra: it.custoMaoObra,
+          custoDireto: it.custoDireto,
+          hhTotal: it.hhTotal,
+          prazoDias: it.prazoDias,
+          insumos: parseInsumos(it.insumosCalculadosJson),
+        }))
+      : [
+          {
+            atividadeNome: lead.atividadeNome ?? "Serviço",
+            unidade: lead.unidade ?? "un",
+            quantidade: lead.quantidade ?? 0,
+            padraoAcabamento: lead.padraoAcabamento ?? "medio",
+            categoriaProfissional:
+              buscarAtividade(lead.atividadeId ?? "")?.categoriaProfissional ??
+              "equipe",
+            custoMaterialTotal: lead.custoMaterialTotal,
+            custoMaoObra: lead.custoMaoObra,
+            custoDireto: lead.custoDireto,
+            hhTotal: lead.hhTotal,
+            prazoDias: lead.prazoDias,
+            insumos: insumosConsolidados,
+          },
+        ];
+
+  const multi = itens.length > 1;
+
+  // Mão de obra consolidada por categoria profissional — derivada dos itens.
+  const moMap = new Map<string, { hh: number; custo: number }>();
+  for (const it of itens) {
+    const slot = moMap.get(it.categoriaProfissional) ?? { hh: 0, custo: 0 };
+    slot.hh += it.hhTotal;
+    slot.custo += it.custoMaoObra;
+    moMap.set(it.categoriaProfissional, slot);
+  }
+  const moConsolidada = Array.from(moMap.entries())
+    .map(([categoria, { hh, custo }]) => ({ categoria, hh, custo }))
+    .sort((a, b) => b.hh - a.hh);
 
   return (
     <div className="flex min-h-screen flex-col bg-navy-900">
@@ -71,13 +144,26 @@ export default async function ResultadoPage({ params }: Props) {
             {lead.pago ? "Seu relatório técnico" : "Seu orçamento está pronto"}
           </h1>
           <p className="mt-3 text-sm text-[var(--fg-on-dark-muted)]">
-            {lead.quantidade.toLocaleString("pt-BR")} {lead.unidade} ·{" "}
-            {lead.atividadeNome} · {lead.cidade ? `${lead.cidade}/` : ""}
-            {lead.uf} · padrão {rotuloPadrao(lead.padraoAcabamento)}
+            {multi
+              ? `${itens.length} serviços · ${lead.cidade ? `${lead.cidade}/` : ""}${lead.uf} · BDI ${lead.bdiPercentual}%`
+              : `${itens[0].quantidade.toLocaleString("pt-BR")} ${itens[0].unidade} · ${itens[0].atividadeNome} · ${lead.cidade ? `${lead.cidade}/` : ""}${lead.uf} · padrão ${rotuloPadrao(itens[0].padraoAcabamento)}`}
           </p>
+
+          {multi && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {itens.map((it, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-cream-50/10 px-3 py-1 text-xs font-semibold text-cream-50"
+                >
+                  {it.atividadeNome}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Card principal — custo final, sempre visível */}
+        {/* Card principal */}
         <div className="mx-auto mt-10 max-w-4xl">
           <div
             className="rounded-3xl bg-cream-50 p-8 text-ink-900 md:p-12"
@@ -90,27 +176,119 @@ export default async function ResultadoPage({ params }: Props) {
               <p className="display display-xb mt-4 text-5xl text-cream-50 md:text-7xl">
                 {formatarBRL(lead.custoFinal)}
               </p>
-              <p className="mt-4 text-base text-[var(--fg-on-dark-muted)]">
-                {formatarBRL(lead.custoPorUnidade)} por {lead.unidade}
-              </p>
+              {!multi && (
+                <p className="mt-4 text-base text-[var(--fg-on-dark-muted)]">
+                  {formatarBRL(lead.custoFinal / (itens[0].quantidade || 1))} por{" "}
+                  {itens[0].unidade}
+                </p>
+              )}
+              {multi && (
+                <p className="mt-4 text-base text-[var(--fg-on-dark-muted)]">
+                  {itens.length} serviços · material + mão de obra + BDI{" "}
+                  {lead.bdiPercentual}%
+                </p>
+              )}
             </div>
 
-            {/* Lista de insumos — sempre tem 3 visíveis; o restante muda conforme pago/não-pago */}
+            {/* Serviços incluídos */}
+            <div className="mt-8">
+              <div className="flex items-center gap-2 text-gold-600">
+                <HardHat className="h-5 w-5" />
+                <p className="t-label t-label-on-cream" style={{ color: "inherit" }}>
+                  {multi ? "Serviços incluídos" : "Serviço orçado"}
+                </p>
+              </div>
+              <h2 className="display mt-3 text-2xl text-ink-900">
+                {multi
+                  ? `${itens.length} serviços neste orçamento`
+                  : itens[0].atividadeNome}
+              </h2>
+
+              <div className="mt-5 space-y-3">
+                {itens.map((it, i) => (
+                  <div
+                    key={i}
+                    className="overflow-hidden rounded-2xl border border-ink-700/10 bg-white"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-3 p-5">
+                      <div>
+                        <p className="font-bold text-ink-900">{it.atividadeNome}</p>
+                        <p className="mt-0.5 text-xs text-ink-400">
+                          {formatarQuantidade(it.quantidade, it.unidade)} · padrão{" "}
+                          {rotuloPadrao(it.padraoAcabamento)}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] uppercase tracking-wider text-ink-400">
+                          Custo direto
+                        </p>
+                        <p className="display text-xl text-ink-900">
+                          {formatarBRL(it.custoDireto)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Insumos do item — só no relatório pago */}
+                    {lead.pago && it.insumos.length > 0 && (
+                      <details className="group border-t border-ink-700/10">
+                        <summary className="flex cursor-pointer items-center justify-between px-5 py-3 text-sm font-semibold text-gold-600 transition-colors hover:bg-[var(--gold-soft)]">
+                          <span>Ver {it.insumos.length} insumos deste serviço</span>
+                          <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
+                        </summary>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead className="bg-ink-900/5 text-xs uppercase tracking-wider text-ink-500">
+                              <tr>
+                                <th className="px-5 py-2.5 text-left font-bold">Insumo</th>
+                                <th className="px-5 py-2.5 text-right font-bold">Qtde</th>
+                                <th className="px-5 py-2.5 text-right font-bold">R$/un</th>
+                                <th className="px-5 py-2.5 text-right font-bold">Subtotal</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-ink-700/10">
+                              {it.insumos.map((ins) => (
+                                <tr key={ins.codigo}>
+                                  <td className="px-5 py-2.5 text-ink-900">{ins.descricao}</td>
+                                  <td className="px-5 py-2.5 text-right text-ink-700">
+                                    {formatarQuantidade(ins.qtdeTotal, ins.unidade)}
+                                  </td>
+                                  <td className="px-5 py-2.5 text-right text-ink-700">
+                                    {formatarBRL(ins.custoUnitarioMedio)}
+                                  </td>
+                                  <td className="px-5 py-2.5 text-right font-bold text-ink-900">
+                                    {formatarBRL(ins.custoTotal)}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </details>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Lista de insumos consolidados */}
             <div className="mt-8">
               <div className="flex items-center gap-2 text-gold-600">
                 <Receipt className="h-5 w-5" />
-                <p
-                  className="t-label t-label-on-cream"
-                  style={{ color: "inherit" }}
-                >
+                <p className="t-label t-label-on-cream" style={{ color: "inherit" }}>
                   Materiais necessários · base SINAPI 06/2026
                 </p>
               </div>
               <h2 className="display mt-3 text-2xl text-ink-900">
-                Lista detalhada de insumos
+                {multi
+                  ? "Lista consolidada de insumos"
+                  : "Lista detalhada de insumos"}
               </h2>
+              {multi && (
+                <p className="mt-2 text-sm text-ink-500">
+                  Materiais usados em mais de um serviço aparecem somados em uma única linha.
+                </p>
+              )}
 
-              {/* Prévia (3 primeiros) */}
               <div className="mt-6 overflow-hidden rounded-2xl border border-ink-700/10">
                 <table className="w-full text-sm">
                   <thead className="bg-ink-900/5 text-xs uppercase tracking-wider text-ink-500">
@@ -149,13 +327,10 @@ export default async function ResultadoPage({ params }: Props) {
                       </tr>
                     ))}
 
-                    {/* Linhas restantes: borradas (paywall) ou completas (pago) */}
                     {lead.pago
                       ? insumosOcultos.map((ins) => (
                           <tr key={ins.codigo}>
-                            <td className="px-4 py-3 text-ink-900">
-                              {ins.descricao}
-                            </td>
+                            <td className="px-4 py-3 text-ink-900">{ins.descricao}</td>
                             <td className="px-4 py-3 text-right text-ink-700">
                               {formatarQuantidade(ins.qtdeTotal, ins.unidade)}
                             </td>
@@ -202,13 +377,12 @@ export default async function ResultadoPage({ params }: Props) {
               {!lead.pago && totalInsumosOcultos > 0 && (
                 <p className="mt-3 text-xs text-ink-500">
                   +{totalInsumosOcultos} insumo{totalInsumosOcultos > 1 ? "s" : ""}{" "}
-                  no relatório completo — incluindo preço unitário SINAPI de cada
-                  item.
+                  no relatório completo — incluindo preço unitário SINAPI de cada item.
                 </p>
               )}
             </div>
 
-            {/* PAYWALL — só aparece se não pago */}
+            {/* PAYWALL */}
             {!lead.pago && (
               <div className="mt-10 rounded-2xl border-2 border-dashed border-gold-500/40 bg-[var(--gold-soft)] p-8 md:p-10">
                 <div className="flex items-start gap-3">
@@ -224,16 +398,15 @@ export default async function ResultadoPage({ params }: Props) {
                       Destrave o detalhamento técnico completo
                     </h3>
                     <p className="mt-3 text-sm leading-relaxed text-ink-700">
-                      Lista completa dos {insumos.length} insumos com{" "}
-                      <strong>preço unitário SINAPI</strong>, dimensionamento
-                      da equipe, prazo em dias úteis, total de homem-hora,
-                      breakdown material/MO/BDI e exportação em PDF.
+                      Lista completa dos {insumosConsolidados.length} insumos com{" "}
+                      <strong>preço unitário SINAPI</strong>, insumos por serviço,
+                      dimensionamento da equipe, prazo em dias úteis, total de
+                      homem-hora, breakdown material/MO/BDI e exportação em PDF.
                     </p>
                   </div>
                 </div>
 
                 <div className="mt-7 grid gap-4 md:grid-cols-2">
-                  {/* Plano individual */}
                   <button
                     type="button"
                     disabled
@@ -248,15 +421,12 @@ export default async function ResultadoPage({ params }: Props) {
                         em breve
                       </span>
                     </div>
-                    <p className="display mt-4 text-4xl text-ink-900">
-                      R$ 29,90
-                    </p>
+                    <p className="display mt-4 text-4xl text-ink-900">R$ 29,90</p>
                     <p className="mt-2 text-xs text-ink-500">
                       pagamento único · acesso permanente
                     </p>
                   </button>
 
-                  {/* Pacote 10× */}
                   <button
                     type="button"
                     disabled
@@ -271,9 +441,7 @@ export default async function ResultadoPage({ params }: Props) {
                         economize 50%
                       </span>
                     </div>
-                    <p className="display mt-4 text-4xl text-cream-50">
-                      R$ 149,90
-                    </p>
+                    <p className="display mt-4 text-4xl text-cream-50">R$ 149,90</p>
                     <p className="mt-2 text-xs text-[var(--fg-on-dark-muted)]">
                       10 destravamentos · R$ 14,99 por relatório
                     </p>
@@ -290,14 +458,12 @@ export default async function ResultadoPage({ params }: Props) {
               </div>
             )}
 
-            {/* RELATÓRIO COMPLETO — só aparece se pago */}
+            {/* RELATÓRIO COMPLETO */}
             {lead.pago && (
               <div className="mt-10 space-y-8">
                 {/* Breakdown financeiro */}
                 <div>
-                  <h3 className="display text-xl text-ink-900">
-                    Composição do custo
-                  </h3>
+                  <h3 className="display text-xl text-ink-900">Composição do custo</h3>
                   <div className="mt-4 grid gap-3 sm:grid-cols-3">
                     <div className="rounded-xl border border-ink-700/10 bg-white p-5">
                       <p className="text-xs uppercase tracking-wider text-ink-500">
@@ -325,6 +491,41 @@ export default async function ResultadoPage({ params }: Props) {
                     </div>
                   </div>
                 </div>
+
+                {/* Mão de obra consolidada por categoria */}
+                {moConsolidada.length > 0 && (
+                  <div>
+                    <h3 className="display text-xl text-ink-900">
+                      Mão de obra por categoria
+                    </h3>
+                    <div className="mt-4 overflow-hidden rounded-2xl border border-ink-700/10">
+                      <table className="w-full text-sm">
+                        <thead className="bg-ink-900/5 text-xs uppercase tracking-wider text-ink-500">
+                          <tr>
+                            <th className="px-4 py-3 text-left font-bold">Profissional</th>
+                            <th className="px-4 py-3 text-right font-bold">Homem-hora</th>
+                            <th className="px-4 py-3 text-right font-bold">Custo</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-ink-700/10">
+                          {moConsolidada.map((m) => (
+                            <tr key={m.categoria}>
+                              <td className="px-4 py-3 capitalize text-ink-900">
+                                {m.categoria}
+                              </td>
+                              <td className="px-4 py-3 text-right text-ink-700">
+                                {m.hh.toFixed(0)} h
+                              </td>
+                              <td className="px-4 py-3 text-right font-bold text-ink-900">
+                                {formatarBRL(m.custo)}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
 
                 {/* Equipe e prazo */}
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -355,10 +556,18 @@ export default async function ResultadoPage({ params }: Props) {
                       </p>
                       <p className="mt-1 text-xs text-ink-500">
                         {lead.hhTotal.toFixed(0)} homem-hora · jornada 8h
+                        {multi ? " · execução sequencial" : ""}
                       </p>
                     </div>
                   </div>
                 </div>
+
+                {multi && (
+                  <p className="rounded-xl bg-navy-900/5 px-4 py-3 text-xs text-ink-500">
+                    O prazo soma os serviços executados em sequência (uma frente de
+                    trabalho). Com equipes paralelas, o prazo total pode ser menor.
+                  </p>
+                )}
 
                 <div className="flex flex-col items-center gap-3 rounded-2xl bg-navy-900/5 p-6 text-center sm:flex-row sm:justify-between sm:text-left">
                   <div className="flex items-center gap-3">
@@ -396,7 +605,7 @@ export default async function ResultadoPage({ params }: Props) {
               </div>
             )}
 
-            {/* Confirmação acima do paywall (só se pago) */}
+            {/* Confirmação (só se pago) */}
             {lead.pago && (
               <div className="mt-8 flex items-start gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-50/50 p-4 text-sm text-ink-700">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 text-emerald-600" />
