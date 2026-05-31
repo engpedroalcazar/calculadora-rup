@@ -58,3 +58,101 @@ model Pacote {
   @@index([email, ativo])
   @@index([expiraEm])
 }
+
+// =====================================================================
+// Models do Produto #2 — Calculadora de Orçamento
+// Adicionados em 2026-05-29 na unificação ORC → RUP (Caminho B).
+// Models acima (Lead, Pacote) permanecem intocados.
+// =====================================================================
+
+model OrcamentoLead {
+  id                 String   @id @default(cuid())
+  nome               String
+  email              String
+  whatsapp           String?
+  empresa            String?
+  perfil             String?
+
+  uf                 String
+  cidade             String?
+
+  atividadeId        String
+  atividadeNome      String
+  unidade            String
+  quantidade         Float
+  padraoAcabamento   String
+  bdiPercentual      Float
+
+  custoMaterialTotal Float
+  custoMaoObra       Float
+  custoDireto        Float
+  custoFinal         Float
+  custoPorUnidade    Float
+  hhTotal            Float
+  prazoDias          Int
+  equipeSugerida     Int
+
+  // Snapshot da lista de insumos calculada no momento do orçamento (JSON serializado).
+  // Mantemos junto com o lead pra preservar o resultado mesmo se a tabela Insumo mudar depois.
+  insumosCalculadosJson String?
+
+  pago               Boolean  @default(false)
+  valor              Float?
+  metodoPagamento    String?
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([email])
+  @@index([pago])
+  @@index([createdAt])
+}
+
+model OrcamentoPacote {
+  id        String   @id @default(cuid())
+  email     String
+  total     Int      @default(10)
+  usado     Int      @default(1)
+  ativo     Boolean  @default(true)
+  leadId    String?
+  expiraEm  DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([ativo])
+}
+
+model Insumo {
+  id                 String   @id @default(cuid())
+  codigo             String   @unique
+  descricao          String
+  unidade            String
+  custoUnitarioMedio Float
+  codigoSinapi       String?
+  fonte              String
+
+  atividadeInsumos   AtividadeInsumo[]
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([codigo])
+}
+
+model AtividadeInsumo {
+  id              String   @id @default(cuid())
+  atividadeId     String
+  insumoId        String
+  insumo          Insumo   @relation(fields: [insumoId], references: [id], onDelete: Cascade)
+
+  qtdePorUnidade  Float
+  fatorPerda      Float    @default(1.0)
+  observacao      String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([atividadeId, insumoId])
+  @@index([atividadeId])
+}

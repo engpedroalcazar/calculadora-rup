@@ -1,0 +1,98 @@
+/* ============================================================
+   CSS específico da Calculadora de Orçamento (Produto #2)
+   Criado em 2026-05-29 na unificação ORC → RUP (Caminho B).
+
+   Escopo: tudo aqui SÓ se aplica a rotas /orcamento/* via
+   o atributo [data-product="orcamento"] aplicado no layout
+   aninhado src/app/orcamento/layout.tsx.
+
+   Por que não toquei no globals.css do RUP:
+   - O RUP em produção tem `.btn-cta` em VERDE (cta-500 = #10b981)
+   - O ORC usa `.btn-cta` em DOURADO (gold-500 = #c9a574)
+   - Redefinições aqui ficam escopadas, não vazam pro RUP
+   ============================================================ */
+
+/* @theme inline gera utility classes do Tailwind v4 a partir
+   das CSS vars do RUP. Sem isso, classes como bg-navy-900,
+   text-cream-50, text-gold-500 etc. não existem porque o
+   globals.css do RUP define --navy-900 mas não --color-navy-900. */
+@theme inline {
+  /* Navy (fundo escuro) — apontam pras vars do RUP */
+  --color-navy-600: var(--navy-600);
+  --color-navy-700: var(--navy-700);
+  --color-navy-800: var(--navy-800);
+  --color-navy-900: var(--navy-900);
+
+  /* Cream (fundo claro / paper) */
+  --color-cream-50:  var(--cream-50);
+  --color-cream-100: var(--cream-100);
+  --color-cream-200: var(--cream-200);
+  --color-cream-300: var(--cream-300);
+
+  /* Gold (accent) */
+  --color-gold-400: var(--gold-400);
+  --color-gold-500: var(--gold-500);
+  --color-gold-600: var(--gold-600);
+
+  /* Ink (texto sobre claro) */
+  --color-ink-400: var(--ink-400);
+  --color-ink-500: var(--ink-500);
+  --color-ink-700: var(--ink-700);
+  --color-ink-900: var(--ink-900);
+
+  /* Severidade — preservadas do RUP */
+  --color-sev-normal: var(--sev-normal);
+  --color-sev-verificar: var(--sev-verificar);
+  --color-sev-atencao: var(--sev-atencao);
+  --color-sev-alerta: var(--sev-alerta);
+  --color-sev-critico: var(--sev-critico);
+}
+
+/* Redefinições de utility classes — escopadas por [data-product="orcamento"]
+   pra NÃO afetar páginas do RUP que usam os mesmos nomes com cores diferentes. */
+
+[data-product="orcamento"] .btn-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--gold-500);
+  color: var(--navy-900);
+  font-family: var(--font-body);
+  font-weight: 700;
+  padding: 1rem 2rem;
+  border-radius: 22px;
+  box-shadow: var(--shadow-cta);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+[data-product="orcamento"] .btn-cta:hover {
+  background: var(--gold-400);
+  transform: translateY(-1px);
+}
+
+[data-product="orcamento"] .btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: var(--fg-on-dark);
+  font-family: var(--font-body);
+  font-weight: 600;
+  padding: 1rem 2rem;
+  border: 1px solid var(--gold-line);
+  border-radius: 22px;
+  transition: background 0.2s ease;
+}
+[data-product="orcamento"] .btn-ghost:hover {
+  background: var(--gold-soft);
+}
+
+/* No ORC o `.t-label` é mais simples — sem a linha decorativa ::before
+   que o RUP usa. Reset escopado pra remover a linha em rotas ORC. */
+[data-product="orcamento"] .t-label::before {
+  display: none;
+}
+[data-product="orcamento"] .t-label {
+  gap: 0;
+}
