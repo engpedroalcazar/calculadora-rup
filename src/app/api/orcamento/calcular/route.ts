@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { calcularOrcamentoMulti } from "@/lib/orcamento/calculo";
 import { isUfValida } from "@/lib/orcamento/salarios";
+import { emailOrcamentoPronto } from "@/lib/orcamento/email";
 
 // Iter #4 — API aceita múltiplos itens. Cada item carrega sua própria atividade,
 // quantidade e padrão de acabamento. O formato single-item antigo foi descontinuado
@@ -147,6 +148,20 @@ export async function POST(req: Request) {
     });
 
     return leadCriado;
+  });
+
+  // Dispara email de "orçamento pronto" — silencioso se RESEND_API_KEY ausente
+  // (em dev local sem chave configurada, não faz nada). Erros do Resend são
+  // logados pelo próprio helper e não interrompem a resposta da API.
+  await emailOrcamentoPronto({
+    to: data.email,
+    nome: data.nome,
+    leadId: lead.id,
+    custoFinal: resultado.custoFinal,
+    qtdeItens: resultado.itens.length,
+    uf: data.uf,
+    cidade: data.cidade || null,
+    bdiPercentual: data.bdiPercentual,
   });
 
   return NextResponse.json({

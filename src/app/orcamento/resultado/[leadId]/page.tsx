@@ -577,17 +577,19 @@ export default async function ResultadoPage({ params }: Props) {
                         Exportar relatório em PDF
                       </p>
                       <p className="text-xs text-ink-500">
-                        Em breve · disponível na próxima atualização (Iter #5).
+                        Abre o relatório completo em uma nova aba, pronto para imprimir ou salvar como PDF.
                       </p>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    disabled
-                    className="cursor-not-allowed rounded-full bg-ink-900/10 px-5 py-2 text-sm font-bold text-ink-500"
+                  <Link
+                    href={`/orcamento/relatorio/${lead.id}`}
+                    target="_blank"
+                    rel="noopener"
+                    className="inline-flex items-center gap-2 rounded-full bg-gold-500 px-5 py-2 text-sm font-bold text-navy-900 transition hover:bg-gold-400"
                   >
-                    Em breve
-                  </button>
+                    <FileDown className="h-4 w-4" />
+                    Abrir relatório
+                  </Link>
                 </div>
 
                 <div className="flex items-start gap-3 rounded-2xl bg-[var(--gold-soft)] p-5">

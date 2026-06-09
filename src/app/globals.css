@@ -80,6 +80,33 @@
   --shadow-cta: 0 8px 24px -10px rgba(201, 165, 116, 0.55);
 }
 
+/* Tailwind v4: mapeia as CSS vars do RUP em tokens --color-* pra gerar
+   utility classes (text-navy-900, bg-cream-50, text-gold-500, text-ink-900...).
+   Adicionado em 08/06/2026 (Iter #5) — corrige bug onde essas classes saíam
+   sem regra CSS (texto herdava cream do body, virando ilegível sobre fundo claro).
+   Aditivo: nenhuma classe pré-existente do RUP muda — todas usam var(--ink-900)
+   etc. direto, não var(--color-ink-900). */
+@theme inline {
+  --color-navy-600: var(--navy-600);
+  --color-navy-700: var(--navy-700);
+  --color-navy-800: var(--navy-800);
+  --color-navy-900: var(--navy-900);
+
+  --color-cream-50:  var(--cream-50);
+  --color-cream-100: var(--cream-100);
+  --color-cream-200: var(--cream-200);
+  --color-cream-300: var(--cream-300);
+
+  --color-gold-400: var(--gold-400);
+  --color-gold-500: var(--gold-500);
+  --color-gold-600: var(--gold-600);
+
+  --color-ink-400: var(--ink-400);
+  --color-ink-500: var(--ink-500);
+  --color-ink-700: var(--ink-700);
+  --color-ink-900: var(--ink-900);
+}
+
 * { box-sizing: border-box; min-width: 0; }
 
 html, body {

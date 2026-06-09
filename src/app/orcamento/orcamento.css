@@ -12,41 +12,11 @@
    - Redefinições aqui ficam escopadas, não vazam pro RUP
    ============================================================ */
 
-/* @theme inline gera utility classes do Tailwind v4 a partir
-   das CSS vars do RUP. Sem isso, classes como bg-navy-900,
-   text-cream-50, text-gold-500 etc. não existem porque o
-   globals.css do RUP define --navy-900 mas não --color-navy-900. */
-@theme inline {
-  /* Navy (fundo escuro) — apontam pras vars do RUP */
-  --color-navy-600: var(--navy-600);
-  --color-navy-700: var(--navy-700);
-  --color-navy-800: var(--navy-800);
-  --color-navy-900: var(--navy-900);
-
-  /* Cream (fundo claro / paper) */
-  --color-cream-50:  var(--cream-50);
-  --color-cream-100: var(--cream-100);
-  --color-cream-200: var(--cream-200);
-  --color-cream-300: var(--cream-300);
-
-  /* Gold (accent) */
-  --color-gold-400: var(--gold-400);
-  --color-gold-500: var(--gold-500);
-  --color-gold-600: var(--gold-600);
-
-  /* Ink (texto sobre claro) */
-  --color-ink-400: var(--ink-400);
-  --color-ink-500: var(--ink-500);
-  --color-ink-700: var(--ink-700);
-  --color-ink-900: var(--ink-900);
-
-  /* Severidade — preservadas do RUP */
-  --color-sev-normal: var(--sev-normal);
-  --color-sev-verificar: var(--sev-verificar);
-  --color-sev-atencao: var(--sev-atencao);
-  --color-sev-alerta: var(--sev-alerta);
-  --color-sev-critico: var(--sev-critico);
-}
+/* O `@theme inline` que gera utility classes do Tailwind v4 a partir das CSS vars
+   do RUP foi MOVIDO pra src/app/globals.css em 08/06/2026 (Iter #5) — porque o
+   Tailwind v4 com Turbopack só processa `@theme inline` em arquivos que importam
+   "tailwindcss", e esse arquivo é só CSS escopado. Sem isso, classes como
+   text-ink-900, bg-cream-50 saíam sem regra CSS e o texto herdava cream do body. */
 
 /* Redefinições de utility classes — escopadas por [data-product="orcamento"]
    pra NÃO afetar páginas do RUP que usam os mesmos nomes com cores diferentes. */
