@@ -455,6 +455,7 @@ function AdminConteudo() {
 
   useEffect(() => {
     const t = searchParams.get("token") ?? sessionStorage.getItem("admin_token") ?? "";
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sincronização única no mount com sessionStorage/URL (auth não disponível no render inicial sem risco de hydration mismatch)
     if (t) { setToken(t); login(t); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -475,6 +476,7 @@ function AdminConteudo() {
 
   useEffect(() => {
     if (!autenticado) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch disparado por mudança de filtro/página; estado de loading é setado no início da busca por design
     fetchLeads({ page, sev: sevFilter, pago: pagoFilter, busca, tok: token });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autenticado, page, sevFilter, pagoFilter, busca, token]);
@@ -764,7 +766,6 @@ function AdminConteudo() {
             <tbody>
               {pacotes.map(p => {
                 const pct = Math.round((p.usado / p.total) * 100);
-                const statusAtivo = p.ativo && !p.expirado;
                 return (
                   <tr key={p.id} className="border-b border-slate-50 hover:bg-slate-50/50">
                     <td className="px-4 py-3 font-medium text-slate-800">{p.email}</td>

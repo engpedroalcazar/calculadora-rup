@@ -97,7 +97,7 @@ export function TestimonialsCarousel() {
           <div className="testimonials-avatar" style={{ width: 96, height: 96, borderRadius: "50%", background: "rgba(201,165,116,0.1)", border: "1px solid var(--gold-line)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--gold-500)", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 32, letterSpacing: "0.02em" }}>{t.initials}</div>
 
           <div>
-            <div style={{ fontFamily: "var(--font-display)", fontSize: 80, color: "var(--gold-500)", lineHeight: 0.6, marginBottom: 8 }}>"</div>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: 80, color: "var(--gold-500)", lineHeight: 0.6, marginBottom: 8 }}>&ldquo;</div>
             <p style={{ fontSize: "clamp(16px, 2vw, 26px)", lineHeight: 1.45, color: "#f3ecde", fontWeight: 400, margin: 0 }}>{t.quote}</p>
             <div style={{ marginTop: 32, display: "flex", alignItems: "center", gap: 32, flexWrap: "wrap" }}>
               <div>

@@ -33,6 +33,7 @@ function ResultadoConteudo() {
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- leitura única de localStorage no mount; dado não existe no render inicial (SSR)
         if (!id || parsed.id === id) { setData(parsed); return; }
       } catch { /* ignore */ }
     }

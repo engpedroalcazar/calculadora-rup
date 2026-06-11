@@ -72,7 +72,7 @@ function CheckoutConteudo() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Erro no pagamento");
-      window.location.href = data.url;
+      window.location.assign(data.url);
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : "Erro ao processar pagamento");
       setLoading(false);

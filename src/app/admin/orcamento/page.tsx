@@ -379,6 +379,7 @@ function AdminOrcamentoConteudo() {
   useEffect(() => {
     const t = searchParams.get("token") ?? sessionStorage.getItem("admin_token") ?? "";
     if (t) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sincronização única no mount com sessionStorage/URL (auth não disponível no render inicial sem risco de hydration mismatch)
       setToken(t);
       login(t);
     }
@@ -387,6 +388,7 @@ function AdminOrcamentoConteudo() {
 
   useEffect(() => {
     if (!autenticado) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch disparado por mudança de filtro/página; estado de loading é setado no início da busca por design
     fetchLeads({ page, pago: pagoFilter, periodo: periodoFilter, busca, tok: token });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autenticado, page, pagoFilter, periodoFilter, busca, token]);
