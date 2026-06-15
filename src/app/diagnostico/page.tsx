@@ -1,44 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { atividades, categorias } from "@/lib/rup";
 import Link from "next/link";
 import Image from "next/image";
+import {
+  Search,
+  ArrowLeft,
+  ArrowRight,
+  Loader2,
+  AlertCircle,
+  CheckCircle2,
+  HardHat,
+  ClipboardList,
+} from "lucide-react";
+import { atividades, categorias } from "@/lib/rup";
+import { QuizProgress } from "@/components/orcamento/QuizProgress";
 
-const TOTAL_STEPS = 6;
-
-const opcoesGrupo = {
-  perfil: [
-    "Engenheiro civil",
-    "Encarregado de obras",
-    "Estagiário de engenharia",
-    "Construtor / Empreiteiro",
-    "Proprietário",
-  ],
-  tipoObra: [
-    "Residencial",
-    "Corporativa",
-    "Incorporação",
-    "Industrial",
-    "Infraestrutura",
-    "Outra",
-  ],
-  preocupacao: [
-    "Atraso na obra",
-    "Mão de obra cara",
-    "Baixa produtividade",
-    "Falta de controle",
-    "Estouro de custo",
-    "Não sei exatamente",
-  ],
-  controle: [
-    "Sim, com sistema digital",
-    "Sim, com planilha Excel",
-    "De forma manual / verbal",
-    "Não controlo produtividade",
-  ],
-};
+const TOTAL_STEPS = 2;
+const LABELS_ETAPAS = ["Atividade", "Produção e contato"];
 
 type FormData = {
   perfil: string; tipoObra: string; preocupacao: string; controle: string;
@@ -53,88 +33,16 @@ const init: FormData = {
   custoEquipeDia: "", cidade: "", nome: "", whatsapp: "", email: "",
 };
 
-const stepTitles = [
-  "Qual é o seu perfil?",
-  "Qual tipo de obra?",
-  "Qual sua maior preocupação?",
-  "Você controla produtividade?",
-  "Qual atividade analisar?",
-  "Dados da produção",
-];
-const stepSubs = [
-  "Selecione a opção que melhor te descreve.",
-  "Tipo da obra que você está gerenciando.",
-  "O que mais tira o seu sono na obra.",
-  "Como você acompanha o desempenho atual.",
-  "Escolha a atividade para calcular a RUP.",
-  "Informe os números da frente de serviço.",
-];
-
-/* ── Chip de seleção ─────────────────────────────────────────────── */
-function Chip({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        width: "100%",
-        padding: "14px 18px",
-        textAlign: "left",
-        fontSize: 15,
-        fontWeight: 600,
-        fontFamily: "var(--font-body)",
-        background: selected ? "var(--gold-500)" : "rgba(243,236,222,0.04)",
-        color: selected ? "#0b1226" : "#f3ecde",
-        border: selected ? "1px solid var(--gold-500)" : "1px solid rgba(243,236,222,0.18)",
-        borderRadius: "var(--radius-md)",
-        cursor: "pointer",
-        transition: "all 0.15s",
-        letterSpacing: "0.01em",
-      }}
-    >
-      {label}
-    </button>
-  );
-}
-
-/* ── Botão de atividade ──────────────────────────────────────────── */
-function AtividadeButton({ at, selected, onClick }: {
-  at: { id: string; nome: string; unidade: string };
-  selected: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "13px 18px",
-        background: selected ? "var(--gold-500)" : "rgba(243,236,222,0.04)",
-        color: selected ? "#0b1226" : "#f3ecde",
-        border: selected ? "1px solid var(--gold-500)" : "1px solid rgba(243,236,222,0.15)",
-        borderRadius: "var(--radius-md)",
-        cursor: "pointer",
-        transition: "all 0.15s",
-        fontFamily: "var(--font-body)",
-        textAlign: "left",
-        width: "100%",
-      }}
-    >
-      <span style={{ fontWeight: 600, fontSize: 14 }}>{at.nome}</span>
-      <span style={{ fontSize: 12, opacity: 0.7, flexShrink: 0, marginLeft: 12 }}>{at.unidade}</span>
-    </button>
-  );
-}
-
-/* ── Campo de texto ──────────────────────────────────────────────── */
+/* ── Campo de texto (tema claro, padrão ORC) ─────────────────────── */
 function Campo({ label, placeholder, value, onChange, type = "text", inputMode, required, hint }: {
   label: string; placeholder: string; value: string; onChange: (v: string) => void;
   type?: string; inputMode?: React.InputHTMLAttributes<HTMLInputElement>["inputMode"];
   required?: boolean; hint?: string;
 }) {
   return (
-    <label style={{ display: "grid", gap: 6 }}>
-      <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gold-500)" }}>
-        {label}{required && <span style={{ color: "#ef4444", marginLeft: 3 }}>*</span>}
+    <label className="grid gap-1.5">
+      <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-ink-700">
+        {label}{required && <span style={{ color: "var(--sev-critico)" }}> *</span>}
       </span>
       <input
         type={type}
@@ -142,24 +50,41 @@ function Campo({ label, placeholder, value, onChange, type = "text", inputMode, 
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        style={{
-          height: 48,
-          padding: "0 16px",
-          background: "rgba(243,236,222,0.05)",
-          border: "1px solid rgba(243,236,222,0.2)",
-          borderRadius: "var(--radius-md)",
-          color: "#f3ecde",
-          fontSize: 15,
-          fontFamily: "var(--font-body)",
-          outline: "none",
-          width: "100%",
-          boxSizing: "border-box",
-        }}
-        onFocus={e => (e.target.style.borderColor = "var(--gold-500)")}
-        onBlur={e => (e.target.style.borderColor = "rgba(243,236,222,0.2)")}
+        className="h-12 w-full rounded-xl border border-ink-700/15 bg-white px-4 text-[15px] text-ink-900 placeholder:text-ink-400 focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
       />
-      {hint && <span style={{ fontSize: 12, color: "rgba(243,236,222,0.45)" }}>{hint}</span>}
+      {hint && <span className="text-xs text-ink-400">{hint}</span>}
     </label>
+  );
+}
+
+/* ── Linha de atividade (single-select, padrão visual ORC) ───────── */
+function LinhaAtividade({ nome, detalhe, selecionada, onSelect, indentada }: {
+  nome: string; detalhe: string; selecionada: boolean; onSelect: () => void; indentada?: boolean;
+}) {
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={onSelect}
+        className={`flex w-full items-center justify-between gap-3 border-b border-ink-700/5 px-4 py-3 text-left text-sm transition-colors hover:bg-[var(--gold-soft)] ${
+          indentada ? "pl-8" : ""
+        } ${selecionada ? "bg-[var(--gold-soft)]" : ""}`}
+      >
+        <div className="flex items-center gap-3">
+          <span
+            className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+              selecionada ? "border-gold-500 bg-gold-500 text-navy-900" : "border-ink-700/25 bg-white"
+            }`}
+          >
+            {selecionada && (
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M4 12l5 5L20 6" /></svg>
+            )}
+          </span>
+          <span className="font-semibold text-ink-900">{nome}</span>
+        </div>
+        <span className="flex-shrink-0 text-xs text-ink-400">{detalhe}</span>
+      </button>
+    </li>
   );
 }
 
@@ -176,19 +101,31 @@ export default function DiagnosticoPage() {
   }
 
   const atSelecionada = atividades.find((a) => a.id === form.atividadeId);
-  const atividadesFiltradas = busca.trim()
-    ? atividades.filter((a) =>
-        a.nome.toLowerCase().includes(busca.toLowerCase()) ||
-        a.categoria.toLowerCase().includes(busca.toLowerCase())
-      )
-    : [];
 
-  function next() { setStep((s) => Math.min(s + 1, TOTAL_STEPS)); }
-  function back() { setStep((s) => Math.max(s - 1, 1)); setErro(""); }
+  const atividadesFiltradas = useMemo(() => {
+    const termo = busca.trim().toLowerCase();
+    if (!termo) return null;
+    return atividades.filter(
+      (a) => a.nome.toLowerCase().includes(termo) || a.categoria.toLowerCase().includes(termo)
+    );
+  }, [busca]);
 
-  function autoNext(field: keyof FormData, value: string) {
-    set(field, value);
-    setTimeout(next, 180);
+  function voltar() {
+    setStep((s) => Math.max(s - 1, 1));
+    setErro("");
+  }
+
+  function avancar() {
+    if (step === 1) {
+      if (!form.atividadeId) {
+        setErro("Selecione uma atividade para continuar.");
+        return;
+      }
+      setErro("");
+      setStep(2);
+      return;
+    }
+    handleSubmit();
   }
 
   async function handleSubmit() {
@@ -237,273 +174,244 @@ export default function DiagnosticoPage() {
     }
   }
 
-  const pct = Math.round((step / TOTAL_STEPS) * 100);
+  const atividadesPorCategoria = (cat: string) => atividades.filter((a) => a.categoria === cat);
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--navy-900)", color: "#f3ecde", fontFamily: "var(--font-body)" }}>
-
+    <div className="flex min-h-screen flex-col bg-navy-900" style={{ fontFamily: "var(--font-body)" }}>
       {/* Header */}
-      <header style={{
-        position: "sticky", top: 0, zIndex: 50,
-        background: "rgba(11,18,38,0.92)",
-        borderBottom: "1px solid var(--navy-line)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-      }}>
-        <div style={{ maxWidth: 640, margin: "0 auto", padding: "0 20px", display: "flex", alignItems: "center", gap: 12, height: 64 }}>
-          {step > 1 ? (
-            <button onClick={back} style={{ background: "none", border: "none", color: "rgba(243,236,222,0.6)", cursor: "pointer", padding: 4, display: "flex", alignItems: "center" }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-            </button>
-          ) : (
-            <Link href="/" style={{ display: "flex", alignItems: "center" }}>
-              <Image src="/assets/obraradar-mark-clean.png" alt="ObraRadar" width={52} height={33} style={{ objectFit: "contain" }} />
-            </Link>
-          )}
-
-          <div style={{ flex: 1 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.16em", color: "rgba(243,236,222,0.5)", textTransform: "uppercase" }}>
-                Etapa {step}/{TOTAL_STEPS}
-              </span>
-              <span style={{ fontSize: 11, fontWeight: 700, color: "var(--gold-500)", letterSpacing: "0.1em" }}>{pct}%</span>
-            </div>
-            <div style={{ height: 3, background: "rgba(243,236,222,0.1)", borderRadius: 4, overflow: "hidden" }}>
-              <div style={{ height: "100%", width: `${pct}%`, background: "var(--gold-500)", borderRadius: 4, transition: "width 0.35s ease" }} />
-            </div>
-          </div>
+      <header className="sticky top-0 z-50 border-b border-[var(--navy-line)]" style={{ background: "rgba(11,18,38,0.92)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
+        <div className="container-x flex h-16 items-center justify-between">
+          <Link href="/" className="flex items-center gap-3">
+            <Image src="/assets/obraradar-mark-clean.png" alt="ObraRadar" width={45} height={29} style={{ objectFit: "contain" }} />
+            <span className="display text-sm text-cream-50" style={{ letterSpacing: "0.03em" }}>OBRA RADAR</span>
+          </Link>
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold-500">Diagnóstico RUP</span>
         </div>
       </header>
 
-      {/* Content */}
-      <div style={{ maxWidth: 640, margin: "0 auto", padding: "40px 20px 80px" }}>
-
-        {/* Step label */}
-        <div style={{ marginBottom: 28 }}>
-          <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(24px, 5vw, 32px)", color: "#f3ecde", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.02em" }}>
-            {stepTitles[step - 1]}
-          </h2>
-          <p style={{ fontSize: 14, color: "rgba(243,236,222,0.6)", margin: 0 }}>{stepSubs[step - 1]}</p>
+      <main className="container-x flex-1 py-12 lg:py-16">
+        <div className="mx-auto max-w-3xl">
+          <p className="t-label">Diagnóstico guiado · 2 etapas</p>
+          <h1 className="display display-xb mt-3 text-3xl text-cream-50 md:text-4xl">
+            Vamos medir sua produtividade
+          </h1>
+          <p className="mt-3 text-sm text-[var(--fg-on-dark-muted)]">
+            Etapa {step} de {TOTAL_STEPS} — {LABELS_ETAPAS[step - 1]}
+          </p>
         </div>
 
-        {/* Step 1 */}
-        {step === 1 && (
-          <div style={{ display: "grid", gap: 10 }}>
-            {opcoesGrupo.perfil.map((op) => (
-              <Chip key={op} label={op} selected={form.perfil === op} onClick={() => autoNext("perfil", op)} />
-            ))}
-          </div>
-        )}
+        <div className="mx-auto mt-8 max-w-3xl">
+          <QuizProgress etapaAtual={step} totalEtapas={TOTAL_STEPS} labels={LABELS_ETAPAS} />
+        </div>
 
-        {/* Step 2 */}
-        {step === 2 && (
-          <div style={{ display: "grid", gap: 10 }}>
-            {opcoesGrupo.tipoObra.map((op) => (
-              <Chip key={op} label={op} selected={form.tipoObra === op} onClick={() => autoNext("tipoObra", op)} />
-            ))}
-          </div>
-        )}
-
-        {/* Step 3 */}
-        {step === 3 && (
-          <div style={{ display: "grid", gap: 10 }}>
-            {opcoesGrupo.preocupacao.map((op) => (
-              <Chip key={op} label={op} selected={form.preocupacao === op} onClick={() => autoNext("preocupacao", op)} />
-            ))}
-          </div>
-        )}
-
-        {/* Step 4 */}
-        {step === 4 && (
-          <div style={{ display: "grid", gap: 10 }}>
-            {opcoesGrupo.controle.map((op) => (
-              <Chip key={op} label={op} selected={form.controle === op} onClick={() => autoNext("controle", op)} />
-            ))}
-          </div>
-        )}
-
-        {/* Step 5 — Atividade agrupada por categoria */}
-        {step === 5 && (
-          <div>
-            <input
-              type="text"
-              placeholder="Buscar atividade..."
-              value={busca}
-              onChange={e => setBusca(e.target.value)}
-              style={{
-                width: "100%", height: 46, padding: "0 16px", marginBottom: 20,
-                background: "rgba(243,236,222,0.06)",
-                border: "1px solid rgba(243,236,222,0.2)",
-                borderRadius: "var(--radius-md)",
-                color: "#f3ecde", fontSize: 14,
-                fontFamily: "var(--font-body)", outline: "none",
-                boxSizing: "border-box",
-              }}
-              onFocus={e => (e.target.style.borderColor = "var(--gold-500)")}
-              onBlur={e => (e.target.style.borderColor = "rgba(243,236,222,0.2)")}
-            />
-
-            {/* Resultado da busca — lista plana */}
-            {busca.trim() ? (
-              <div style={{ display: "grid", gap: 8 }}>
-                {atividadesFiltradas.length === 0 ? (
-                  <p style={{ color: "rgba(243,236,222,0.5)", fontSize: 14, textAlign: "center", padding: "24px 0" }}>
-                    Nenhuma atividade encontrada.
-                  </p>
-                ) : atividadesFiltradas.map((at) => (
-                  <AtividadeButton
-                    key={at.id} at={at}
-                    selected={form.atividadeId === at.id}
-                    onClick={() => autoNext("atividadeId", at.id)}
-                  />
-                ))}
+        <div className="mx-auto mt-10 max-w-3xl rounded-3xl bg-cream-50 p-7 text-ink-900 md:p-10" style={{ boxShadow: "var(--shadow-card)" }}>
+          {/* Etapa 1 — Atividade */}
+          {step === 1 && (
+            <div>
+              <div className="flex items-center gap-2 text-gold-600">
+                <HardHat className="h-5 w-5" />
+                <p className="t-label t-label-on-cream" style={{ color: "inherit" }}>
+                  Qual atividade você quer analisar?
+                </p>
               </div>
-            ) : (
-              /* Lista agrupada por categoria */
-              <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-                {categorias.map((cat) => {
-                  const grupo = atividades.filter((a) => a.categoria === cat);
-                  return (
-                    <div key={cat}>
-                      <div style={{
-                        fontSize: 10, fontWeight: 700, letterSpacing: "0.24em",
-                        textTransform: "uppercase", color: "var(--gold-500)",
-                        paddingBottom: 10, marginBottom: 10,
-                        borderBottom: "1px solid rgba(201,165,116,0.2)",
-                        display: "flex", alignItems: "center", gap: 8,
-                      }}>
-                        <span style={{ width: 18, height: 1, background: "var(--gold-500)", display: "inline-block" }} />
+              <h2 className="display mt-3 text-2xl text-ink-900">
+                Escolha a atividade da obra
+              </h2>
+              <p className="mt-2 text-sm text-ink-500">
+                Selecione o serviço executado pela equipe — a RUP compara as horas-homem gastas com o benchmark normativo dessa atividade. Na próxima etapa você informa os números.
+              </p>
+
+              <div className="relative mt-6">
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
+                <input
+                  type="text"
+                  value={busca}
+                  onChange={(e) => setBusca(e.target.value)}
+                  placeholder="ex: alvenaria, piso, concretagem, pintura..."
+                  className="w-full rounded-xl border border-ink-700/15 bg-white py-3 pl-11 pr-4 text-ink-900 placeholder:text-ink-400 focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
+                />
+              </div>
+
+              {atSelecionada && (
+                <div className="mt-4 flex items-center gap-2 rounded-xl bg-[var(--gold-soft)] px-4 py-3 text-sm font-semibold text-gold-600">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Selecionada: {atSelecionada.nome}
+                </div>
+              )}
+
+              <div className="mt-5 max-h-[420px] overflow-y-auto rounded-xl border border-ink-700/10 bg-white">
+                {atividadesFiltradas ? (
+                  atividadesFiltradas.length === 0 ? (
+                    <p className="px-4 py-6 text-center text-sm text-ink-400">
+                      Nenhuma atividade encontrada. Tente outra palavra.
+                    </p>
+                  ) : (
+                    <ul>
+                      {atividadesFiltradas.map((a) => (
+                        <LinhaAtividade
+                          key={a.id}
+                          nome={a.nome}
+                          detalhe={`${a.categoria} · unidade: ${a.unidade}`}
+                          selecionada={form.atividadeId === a.id}
+                          onSelect={() => set("atividadeId", a.id)}
+                        />
+                      ))}
+                    </ul>
+                  )
+                ) : (
+                  categorias.map((cat) => (
+                    <details key={cat} className="border-b border-ink-700/5 last:border-b-0">
+                      <summary className="cursor-pointer px-4 py-3 text-sm font-bold uppercase tracking-wider text-ink-700 transition-colors hover:bg-ink-700/5">
                         {cat}
-                      </div>
-                      <div style={{ display: "grid", gap: 8 }}>
-                        {grupo.map((at) => (
-                          <AtividadeButton
-                            key={at.id} at={at}
-                            selected={form.atividadeId === at.id}
-                            onClick={() => autoNext("atividadeId", at.id)}
+                      </summary>
+                      <ul className="bg-ink-700/[0.02]">
+                        {atividadesPorCategoria(cat).map((a) => (
+                          <LinhaAtividade
+                            key={a.id}
+                            nome={a.nome}
+                            detalhe={`unidade: ${a.unidade}`}
+                            selecionada={form.atividadeId === a.id}
+                            onSelect={() => set("atividadeId", a.id)}
+                            indentada
                           />
                         ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Step 6 — Dados */}
-        {step === 6 && (
-          <div style={{ display: "grid", gap: 16 }}>
-            {/* Atividade selecionada */}
-            {atSelecionada ? (
-              <div style={{ padding: "14px 18px", background: "rgba(201,165,116,0.1)", border: "1px solid rgba(201,165,116,0.3)", borderRadius: "var(--radius-md)" }}>
-                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.16em", color: "var(--gold-500)", textTransform: "uppercase" }}>Atividade selecionada</span>
-                <p style={{ margin: "4px 0 0", fontWeight: 700, fontSize: 15, color: "#f3ecde" }}>{atSelecionada.nome}</p>
-              </div>
-            ) : (
-              <div style={{ padding: "14px 18px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.35)", borderRadius: "var(--radius-md)", display: "flex", alignItems: "center", gap: 12 }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fca5a5" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-                <div>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: "#fca5a5" }}>Nenhuma atividade selecionada</span>
-                  <p style={{ margin: "2px 0 0", fontSize: 12, color: "rgba(252,165,165,0.7)" }}>Volte ao passo anterior e escolha uma atividade.</p>
-                </div>
-              </div>
-            )}
-
-            {/* Produção */}
-            <div style={{ padding: 20, background: "rgba(243,236,222,0.03)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)" }}>
-              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--gold-500)", margin: "0 0 16px" }}>Produção</p>
-              <div style={{ display: "grid", gap: 14, gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}>
-                <Campo
-                  label={`Quantidade executada (${atSelecionada?.unidade ?? "unid"})`}
-                  placeholder="Ex: 40"
-                  value={form.quantidade} onChange={(v) => set("quantidade", v)}
-                  inputMode="decimal" required
-                />
-                <Campo
-                  label="Nº de trabalhadores"
-                  placeholder="Ex: 4"
-                  value={form.trabalhadores} onChange={(v) => set("trabalhadores", v)}
-                  inputMode="numeric" required
-                />
-                <Campo
-                  label="Horas por trabalhador/dia"
-                  placeholder="Ex: 8"
-                  value={form.horasPorDia} onChange={(v) => set("horasPorDia", v)}
-                  inputMode="decimal" required
-                />
-                <Campo
-                  label="Número de dias"
-                  placeholder="Ex: 3"
-                  value={form.dias} onChange={(v) => set("dias", v)}
-                  inputMode="numeric" required
-                />
-                <Campo
-                  label="Custo da equipe por dia (R$)"
-                  placeholder="Ex: 800 — opcional"
-                  value={form.custoEquipeDia} onChange={(v) => set("custoEquipeDia", v)}
-                  inputMode="decimal"
-                  hint="Total pago por dia para toda a equipe. Calcula o impacto financeiro."
-                />
-                <Campo
-                  label="Cidade"
-                  placeholder="Ex: Maringá"
-                  value={form.cidade} onChange={(v) => set("cidade", v)}
-                />
+                      </ul>
+                    </details>
+                  ))
+                )}
               </div>
             </div>
+          )}
 
-            {/* Contato */}
-            <div style={{ padding: 20, background: "rgba(243,236,222,0.03)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)" }}>
-              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--gold-500)", margin: "0 0 16px" }}>Seus dados</p>
-              <div style={{ display: "grid", gap: 14, gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}>
-                <Campo label="Seu nome" placeholder="Seu nome completo" value={form.nome} onChange={(v) => set("nome", v)} required />
-                <Campo label="WhatsApp" placeholder="(00) 00000-0000" value={form.whatsapp} onChange={(v) => set("whatsapp", v)} inputMode="tel" required />
-                <div style={{ gridColumn: "1 / -1" }}>
-                  <Campo label="E-mail" placeholder="seu@email.com" value={form.email} onChange={(v) => set("email", v)} type="email" required />
+          {/* Etapa 2 — Produção e contato */}
+          {step === 2 && (
+            <div>
+              <div className="flex items-center gap-2 text-gold-600">
+                <ClipboardList className="h-5 w-5" />
+                <p className="t-label t-label-on-cream" style={{ color: "inherit" }}>
+                  Últimos números e pronto
+                </p>
+              </div>
+              <h2 className="display mt-3 text-2xl text-ink-900">
+                Dados da produção
+              </h2>
+              <p className="mt-2 text-sm text-ink-500">
+                Informe os números da frente de serviço e onde te enviamos o resultado.
+              </p>
+
+              {/* Atividade selecionada */}
+              {atSelecionada && (
+                <div className="mt-6 flex items-center gap-2 rounded-xl bg-[var(--gold-soft)] px-4 py-3 text-sm font-semibold text-gold-600">
+                  <CheckCircle2 className="h-4 w-4" />
+                  {atSelecionada.nome}
+                </div>
+              )}
+
+              {/* Produção */}
+              <div className="mt-5 rounded-xl border border-ink-700/10 bg-white p-5">
+                <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-gold-600">Produção</p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Campo
+                    label={`Quantidade executada (${atSelecionada?.unidade ?? "unid"})`}
+                    placeholder="Ex: 40"
+                    value={form.quantidade} onChange={(v) => set("quantidade", v)}
+                    inputMode="decimal" required
+                  />
+                  <Campo
+                    label="Nº de trabalhadores"
+                    placeholder="Ex: 4"
+                    value={form.trabalhadores} onChange={(v) => set("trabalhadores", v)}
+                    inputMode="numeric" required
+                  />
+                  <Campo
+                    label="Horas por trabalhador/dia"
+                    placeholder="Ex: 8"
+                    value={form.horasPorDia} onChange={(v) => set("horasPorDia", v)}
+                    inputMode="decimal" required
+                  />
+                  <Campo
+                    label="Número de dias"
+                    placeholder="Ex: 3"
+                    value={form.dias} onChange={(v) => set("dias", v)}
+                    inputMode="numeric" required
+                  />
+                  <Campo
+                    label="Custo da equipe por dia (R$)"
+                    placeholder="Ex: 800 — opcional"
+                    value={form.custoEquipeDia} onChange={(v) => set("custoEquipeDia", v)}
+                    inputMode="decimal"
+                    hint="Total pago por dia para toda a equipe. Calcula o impacto financeiro."
+                  />
+                  <Campo
+                    label="Cidade"
+                    placeholder="Ex: Maringá"
+                    value={form.cidade} onChange={(v) => set("cidade", v)}
+                  />
+                </div>
+              </div>
+
+              {/* Contato */}
+              <div className="mt-5 rounded-xl border border-ink-700/10 bg-white p-5">
+                <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-gold-600">Seus dados</p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Campo label="Seu nome" placeholder="Seu nome completo" value={form.nome} onChange={(v) => set("nome", v)} required />
+                  <Campo label="WhatsApp" placeholder="(00) 00000-0000" value={form.whatsapp} onChange={(v) => set("whatsapp", v)} inputMode="tel" required />
+                  <div className="sm:col-span-2">
+                    <Campo label="E-mail" placeholder="seu@email.com" value={form.email} onChange={(v) => set("email", v)} type="email" required />
+                  </div>
                 </div>
               </div>
             </div>
+          )}
 
-            {erro && (
-              <div style={{ padding: "14px 18px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.35)", borderRadius: "var(--radius-md)", fontSize: 14, color: "#fca5a5" }}>
-                {erro}
-              </div>
-            )}
+          {erro && (
+            <div className="mt-6 flex items-start gap-2 rounded-xl p-3 text-sm" style={{ border: "1px solid rgba(201,90,74,0.3)", background: "rgba(201,90,74,0.1)", color: "var(--sev-critico)" }}>
+              <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
+              <span>{erro}</span>
+            </div>
+          )}
 
+          <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
             <button
-              onClick={handleSubmit}
-              disabled={loading}
-              style={{
-                width: "100%", padding: "18px 24px",
-                background: loading ? "rgba(16,185,129,0.5)" : "var(--cta-500)",
-                color: "#fff",
-                border: "none", borderRadius: "var(--radius-md)",
-                fontSize: 16, fontWeight: 800,
-                fontFamily: "var(--font-body)",
-                letterSpacing: "0.04em",
-                cursor: loading ? "not-allowed" : "pointer",
-                boxShadow: loading ? "none" : "var(--cta-glow)",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-                transition: "all 0.2s",
-              }}
+              type="button"
+              onClick={voltar}
+              disabled={step === 1 || loading}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-ink-700/15 bg-white px-6 py-3 text-sm font-bold text-ink-700 transition-colors hover:bg-ink-700/5 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Voltar
+            </button>
+            <button
+              type="button"
+              onClick={avancar}
+              disabled={loading || (step === 1 && !form.atividadeId)}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl px-7 py-3 text-sm font-extrabold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
+              style={{ background: "var(--cta-500)", boxShadow: "var(--cta-glow)", letterSpacing: "0.03em" }}
             >
               {loading ? (
                 <>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ animation: "spin 1s linear infinite" }}><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                  <Loader2 className="h-5 w-5 animate-spin" />
                   Calculando...
                 </>
-              ) : "Calcular minha RUP"}
+              ) : step === TOTAL_STEPS ? (
+                <>
+                  Calcular minha RUP
+                  <ArrowRight className="h-5 w-5" />
+                </>
+              ) : (
+                <>
+                  Próxima etapa
+                  <ArrowRight className="h-5 w-5" />
+                </>
+              )}
             </button>
-            <p style={{ textAlign: "center", fontSize: 12, color: "rgba(243,236,222,0.4)" }}>
-              Seus dados não serão compartilhados com terceiros.
-            </p>
           </div>
-        )}
-      </div>
+        </div>
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        <p className="mx-auto mt-6 max-w-3xl text-center text-xs text-[var(--fg-on-dark-muted)]">
+          Seus dados são usados apenas para gerar e enviar o diagnóstico. Não compartilhamos com terceiros.
+        </p>
+      </main>
     </div>
   );
 }
