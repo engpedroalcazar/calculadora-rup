@@ -4,6 +4,11 @@ import { useEffect, useRef, useState } from "react";
 export function LiveViewerWidget() {
   const [count, setCount] = useState(() => 6 + Math.floor(Math.random() * 7));
   const [dismissed, setDismissed] = useState(false);
+  // O número é aleatório e divergiria entre servidor e navegador (hydration
+  // mismatch). Montar só no cliente evita o erro e o "pisca" do número.
+  const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- monta só no cliente p/ evitar hydration mismatch do contador aleatório
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     if (dismissed) return;
@@ -17,7 +22,7 @@ export function LiveViewerWidget() {
     return () => { clearInterval(updateTimer); clearTimeout(dismissTimer); };
   }, [dismissed]);
 
-  if (dismissed) return null;
+  if (!mounted || dismissed) return null;
   return (
     <div className="lvw-slide-in" style={{
       position: "fixed", bottom: 80, left: 20,

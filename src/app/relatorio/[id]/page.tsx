@@ -71,7 +71,9 @@ export default async function RelatorioPage({
       <header style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(11,18,38,0.92)", borderBottom: "1px solid var(--navy-line)", backdropFilter: "blur(12px)" }} className="print:hidden">
         <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 20px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
           <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <Image src="/assets/obraradar-mark-clean.png" alt="ObraRadar" width={48} height={30} style={{ objectFit: "contain" }} />
+            <span style={{ display: "inline-flex", width: 36, height: 36, borderRadius: 10, overflow: "hidden", flexShrink: 0 }}>
+              <Image src="/logos/orcamento/obraradar-icon.jpg" alt="Obra Radar" width={36} height={36} style={{ objectFit: "cover" }} />
+            </span>
             <span style={{ fontFamily: "var(--font-display)", fontSize: 16, color: "#f3ecde", letterSpacing: "0.04em" }}>OBRA RADAR</span>
           </Link>
           <PrintButton />

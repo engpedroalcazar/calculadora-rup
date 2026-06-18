@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { CheckCircle2, Lock, Check, ArrowRight, Loader2, HardHat } from "lucide-react";
 
 interface ResultadoData {
   id: string; severidade: string; desvio: number;
@@ -41,139 +42,152 @@ function ResultadoConteudo() {
   }, [id, router]);
 
   if (!data) return (
-    <div style={{ minHeight: "100vh", background: "var(--navy-900)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ width: 32, height: 32, border: "2px solid rgba(243,236,222,0.1)", borderTop: "2px solid var(--gold-500)", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    <div className="flex min-h-screen items-center justify-center bg-navy-900">
+      <Loader2 className="h-8 w-8 animate-spin text-gold-500" />
     </div>
   );
 
   const preco = Number(process.env.NEXT_PUBLIC_PRECO ?? 39.9);
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--navy-900)", color: "#f3ecde", fontFamily: "var(--font-body)" }}>
-
-      {/* Header */}
-      <header style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(11,18,38,0.92)", borderBottom: "1px solid var(--navy-line)", backdropFilter: "blur(12px)" }}>
-        <div style={{ maxWidth: 680, margin: "0 auto", padding: "0 20px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
-          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <Image src="/assets/obraradar-mark-clean.png" alt="ObraRadar" width={48} height={30} style={{ objectFit: "contain" }} />
-            <span style={{ fontFamily: "var(--font-display)", fontSize: 16, color: "#f3ecde", letterSpacing: "0.04em" }}>OBRA RADAR</span>
+    <div className="flex min-h-screen flex-col bg-navy-900" style={{ fontFamily: "var(--font-body)" }}>
+      {/* Header — padrão visual do Orçamento (selo do radar + navy) */}
+      <header
+        className="sticky top-0 z-50 border-b border-[var(--navy-line)]"
+        style={{ background: "rgba(11,18,38,0.92)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
+      >
+        <div className="container-x flex h-16 items-center justify-between">
+          <Link href="/" className="flex items-center gap-3">
+            <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-[10px]">
+              <Image src="/logos/orcamento/obraradar-icon.jpg" alt="Obra Radar" width={36} height={36} className="h-9 w-9 object-cover" />
+            </span>
+            <span className="display text-sm text-cream-50" style={{ letterSpacing: "0.04em" }}>OBRA RADAR</span>
           </Link>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--cta-500)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12l5 5L20 6"/></svg>
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.1em] text-emerald-500">
+            <CheckCircle2 className="h-4 w-4" />
             Análise concluída
           </div>
         </div>
       </header>
 
-      <div style={{ maxWidth: 640, margin: "0 auto", padding: "40px 20px 80px" }}>
-
-        {/* Confirmação */}
-        <div style={{ textAlign: "center", marginBottom: 36 }}>
-          <div style={{ width: 64, height: 64, borderRadius: "50%", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--cta-500)" strokeWidth="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(26px, 5vw, 36px)", color: "#f3ecde", margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.02em" }}>
-            Diagnóstico pronto!
+      <main className="container-x flex-1 py-12 lg:py-16">
+        <div className="mx-auto max-w-2xl">
+          <p className="t-label">Diagnóstico RUP · resultado</p>
+          <h1 className="display display-xb mt-3 text-3xl text-cream-50 md:text-4xl">
+            Seu diagnóstico está pronto
           </h1>
-          <p style={{ fontSize: 15, color: "rgba(243,236,222,0.6)", margin: 0 }}>
-            Sua análise foi processada. Os resultados estão bloqueados até a liberação.
+          <p className="mt-3 text-sm text-[var(--fg-on-dark-muted)]">
+            Os indicadores estão bloqueados até a liberação do laudo completo.
           </p>
         </div>
 
-        {/* Atividade analisada */}
-        <div style={{ marginBottom: 20, padding: "14px 18px", background: "rgba(243,236,222,0.04)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)", display: "flex", alignItems: "center", gap: 12 }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold-500)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-          <div>
-            <p style={{ margin: 0, fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--gold-500)" }}>Atividade analisada</p>
-            <p style={{ margin: "2px 0 0", fontWeight: 700, fontSize: 15, color: "#f3ecde" }}>{data.atividadeNome}</p>
-          </div>
-        </div>
-
-        {/* Bloqueio visual */}
-        <div style={{ marginBottom: 24, padding: 24, background: "rgba(243,236,222,0.02)", border: "1px solid rgba(243,236,222,0.08)", borderRadius: "var(--radius-md)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(243,236,222,0.3)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-            <span style={{ fontSize: 12, color: "rgba(243,236,222,0.4)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>Resultados bloqueados</span>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 10 }}>
-            {["Severidade", "Desvio %", "RUP Real", "HH Total", "Custo estimado", "Perda estimada"].map((label) => (
-              <div key={label} style={{ position: "relative", padding: "14px 16px", background: "rgba(243,236,222,0.03)", borderRadius: "var(--radius-md)", overflow: "hidden" }}>
-                <p style={{ margin: "0 0 6px", fontSize: 10, color: "rgba(243,236,222,0.35)", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase" }}>{label}</p>
-                <p style={{ margin: 0, fontSize: 22, fontFamily: "var(--font-display)", color: "rgba(243,236,222,0.08)", filter: "blur(6px)", userSelect: "none" }}>—</p>
-                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(243,236,222,0.2)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* CTA unlock */}
-        <div style={{ padding: 28, background: "rgba(201,165,116,0.07)", border: "1px solid var(--gold-line)", borderRadius: "var(--radius-md)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--cta-500)" strokeWidth="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 18, color: "#f3ecde", letterSpacing: "0.03em" }}>RELATÓRIO COMPLETO</p>
-          </div>
-          <p style={{ fontSize: 14, lineHeight: 1.65, color: "rgba(243,236,222,0.65)", marginBottom: 18 }}>
-            Libere todos os indicadores, o diagnóstico detalhado, causas prováveis e ações recomendadas.
-          </p>
-          <ul style={{ margin: "0 0 22px", padding: 0, listStyle: "none", display: "grid", gap: 8 }}>
-            {inclusos.map((item) => (
-              <li key={item} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "rgba(243,236,222,0.75)" }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--cta-500)" strokeWidth="2"><path d="M4 12l5 5L20 6"/></svg>
-                {item}
-              </li>
-            ))}
-          </ul>
-
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18, flexWrap: "wrap", gap: 8 }}>
+        {/* Cartão creme — identidade do Orçamento */}
+        <div
+          className="mx-auto mt-10 max-w-2xl rounded-3xl bg-cream-50 p-6 text-ink-900 md:p-10"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          {/* Atividade analisada */}
+          <div className="flex items-center gap-3 rounded-2xl border border-ink-700/10 bg-white p-5">
+            <HardHat className="h-5 w-5 flex-shrink-0 text-gold-600" />
             <div>
-              <p style={{ margin: 0, fontSize: 11, color: "rgba(243,236,222,0.45)", letterSpacing: "0.12em", textTransform: "uppercase" }}>A partir de</p>
-              <p style={{ margin: "4px 0 0", fontFamily: "var(--font-display)", fontSize: 36, color: "var(--cta-500)", lineHeight: 1 }}>
-                R$ {preco.toFixed(2).replace(".", ",")}
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-gold-600">
+                Atividade analisada
+              </p>
+              <p className="mt-0.5 font-bold text-ink-900">{data.atividadeNome}</p>
+            </div>
+          </div>
+
+          {/* Indicadores bloqueados */}
+          <div className="mt-6">
+            <div className="flex items-center gap-2 text-ink-400">
+              <Lock className="h-4 w-4" />
+              <span className="text-xs font-bold uppercase tracking-[0.12em]">Indicadores bloqueados</span>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {["Severidade", "Desvio %", "RUP real", "HH total", "Custo estimado", "Perda estimada"].map((label) => (
+                <div key={label} className="relative overflow-hidden rounded-xl border border-ink-700/10 bg-white p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-400">{label}</p>
+                  <p className="mt-1 select-none text-2xl text-ink-900/10" style={{ filter: "blur(6px)" }}>00,0</p>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Lock className="h-4 w-4 text-ink-400/50" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Paywall — destravar laudo */}
+          <div className="mt-8 rounded-2xl border-2 border-dashed border-gold-500/40 bg-[var(--gold-soft)] p-6 md:p-8">
+            <div className="flex items-start gap-3">
+              <Lock className="mt-1 h-6 w-6 flex-shrink-0 text-gold-600" />
+              <div>
+                <p className="t-label t-label-on-cream" style={{ color: "var(--gold-600)" }}>
+                  Laudo técnico completo
+                </p>
+                <h3 className="display mt-2 text-2xl text-ink-900">
+                  Destrave o diagnóstico completo
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-ink-700">
+                  Todos os indicadores, o diagnóstico detalhado, as causas mais
+                  prováveis do desvio e as ações recomendadas para corrigir.
+                </p>
+              </div>
+            </div>
+
+            <ul className="mt-5 grid gap-2 sm:grid-cols-2">
+              {inclusos.map((item) => (
+                <li key={item} className="flex items-start gap-2 text-sm text-ink-700">
+                  <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-600" strokeWidth={2.5} />
+                  {item}
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-6 flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.12em] text-ink-400">A partir de</p>
+                <p className="display text-4xl text-ink-900">
+                  R$ {preco.toFixed(2).replace(".", ",")}
+                </p>
+              </div>
+              <p className="max-w-[160px] text-right text-xs text-ink-400">
+                Acesso imediato após o pagamento
               </p>
             </div>
-            <p style={{ fontSize: 12, color: "rgba(243,236,222,0.4)", maxWidth: 140, textAlign: "right" }}>Acesso imediato após pagamento</p>
+
+            <Link
+              href={`/checkout?id=${data.id}`}
+              className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl px-6 py-4 text-base font-extrabold text-white transition"
+              style={{ background: "var(--cta-500)", boxShadow: "var(--cta-glow)", letterSpacing: "0.03em" }}
+            >
+              Liberar meu laudo completo
+              <ArrowRight className="h-5 w-5" />
+            </Link>
+            <p className="mt-3 text-center text-xs text-ink-400">
+              Pagamento seguro via Pix ou cartão
+            </p>
           </div>
 
-          <Link href={`/checkout?id=${data.id}`}>
-            <button style={{
-              width: "100%", padding: "18px 24px",
-              background: "var(--cta-500)", color: "#fff",
-              border: "none", borderRadius: "var(--radius-md)",
-              fontFamily: "var(--font-body)", fontSize: 16, fontWeight: 800,
-              letterSpacing: "0.04em", cursor: "pointer",
-              boxShadow: "var(--cta-glow)",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-            }}>
-              Liberar meu relatório completo
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-            </button>
-          </Link>
-          <p style={{ marginTop: 10, textAlign: "center", fontSize: 12, color: "rgba(243,236,222,0.4)" }}>Pagamento seguro via Pix ou cartão</p>
+          <div className="mt-6 text-center">
+            <Link href="/diagnostico" className="text-sm text-ink-400 transition-colors hover:text-ink-700">
+              Analisar outra atividade
+            </Link>
+          </div>
         </div>
-
-        <div style={{ marginTop: 28, textAlign: "center" }}>
-          <Link href="/diagnostico" style={{ fontSize: 13, color: "rgba(243,236,222,0.4)" }}>
-            Analisar outra atividade
-          </Link>
-        </div>
-      </div>
-
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </main>
     </div>
   );
 }
 
 export default function ResultadoPage() {
   return (
-    <Suspense fallback={
-      <div style={{ minHeight: "100vh", background: "var(--navy-900)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: 32, height: 32, border: "2px solid rgba(243,236,222,0.1)", borderTop: "2px solid var(--gold-500)", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-navy-900">
+          <Loader2 className="h-8 w-8 animate-spin text-gold-500" />
+        </div>
+      }
+    >
       <ResultadoConteudo />
     </Suspense>
   );

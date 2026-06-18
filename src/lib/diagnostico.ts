@@ -25,17 +25,17 @@ export function gerarDiagnostico(
 
   if (severidade === "VERIFICAR") {
     return {
-      resumo: `A atividade de ${nome} apresentou RUP real de ${fmt(rupReal)} Hh/${unidade}, muito abaixo da referência de ${fmt(rupRef)} Hh/${unidade} (desvio de ${fmt(desvio, 1)}%). Verifique a medição antes de concluir.`,
+      resumo: `A atividade de ${nome} apresentou RUP real de ${fmt(rupReal)} Hh/${unidade}, bem abaixo da referência de ${fmt(rupRef)} Hh/${unidade} (desvio de ${fmt(desvio, 1)}%). Produtividade acima do esperado — vale confirmar os dados antes de adotar como referência.`,
       causas: [
-        "Quantidade superestimada no lançamento",
-        "Erro de medição em campo",
-        "Lançamento incorreto de horas trabalhadas",
-        "Equipe excepcionalmente produtiva (confirmar)",
+        "Equipe experiente ou com alta repetição da atividade (curva de aprendizado)",
+        "Frente de serviço bem abastecida e sem interferências",
+        "Condições de execução favoráveis (acesso, clima, projeto detalhado)",
+        "Possível superestimativa da quantidade ou subcontagem de horas no lançamento",
       ],
       acoes: [
-        "Conferir a medição da quantidade executada",
-        "Revisar o lançamento de horas e número de trabalhadores",
-        "Validar os dados com o responsável de campo",
+        "Confirmar a quantidade executada e as horas lançadas com o campo",
+        "Verificar se a referência normativa corresponde ao método executivo usado",
+        "Se os dados se confirmarem, registrar a equipe e o método como benchmark interno",
       ],
       confiabilidade,
     };
@@ -65,43 +65,48 @@ export function gerarDiagnostico(
 
   const causas: Record<NivelAlto, string[]> = {
     ATENÇÃO: [
-      "Logística de materiais irregular",
-      "Pequenas interferências e paralisações",
-      "Ritmo de produção levemente abaixo do esperado",
+      "Abastecimento de materiais na frente com pequenas interrupções",
+      "Interferências entre equipes ou com outras frentes de serviço",
+      "Frente de trabalho parcialmente liberada (precedências atrasadas)",
+      "Ferramental ou equipamento aquém do ideal para o ritmo",
     ],
     ALERTA: [
-      "Subdimensionamento da equipe ou frente de serviço",
-      "Falta de material ou suprimento irregular",
-      "Interferências e paralisações parciais",
-      "Retrabalho por problemas de qualidade",
+      "Dimensionamento da equipe incompatível com a frente disponível",
+      "Retrabalho por falhas de qualidade ou de projeto",
+      "Paradas recorrentes por falta de material ou de frente liberada",
+      "Transporte e movimentação interna consumindo tempo produtivo",
+      "Supervisão insuficiente para o tamanho da frente",
     ],
     CRÍTICO: [
-      "Equipe subdimensionada para a demanda da atividade",
-      "Retrabalho sistemático por qualidade",
-      "Paralisações frequentes por falta de material",
-      "Método executivo inadequado ou desatualizado",
-      "Fadiga ou alta rotatividade da equipe",
+      "Equipe muito subdimensionada para a meta de produção",
+      "Retrabalho sistemático por qualidade, projeto ou compatibilização",
+      "Paralisações frequentes por falta de material, frente ou equipamento",
+      "Método executivo inadequado ou desatualizado para o serviço",
+      "Baixa qualificação, alta rotatividade ou fadiga acentuada da equipe",
+      "Condições de canteiro desfavoráveis (acesso, layout, clima)",
     ],
   };
 
   const acoes: Record<NivelAlto, string[]> = {
     ATENÇÃO: [
-      "Verificar logística de materiais e disponibilidade de frente",
-      "Conversar com o encarregado sobre interferências",
-      "Monitorar por mais dias antes de ações corretivas",
+      "Mapear com o encarregado as interrupções de abastecimento na frente",
+      "Revisar o sequenciamento das equipes para reduzir interferências",
+      "Conferir a liberação das atividades precedentes",
+      "Monitorar por mais alguns dias antes de mexer no dimensionamento",
     ],
     ALERTA: [
-      "Revisar o dimensionamento da equipe para esta atividade",
-      "Investigar retrabalhos e paralisações recentes",
-      "Verificar abastecimento de materiais e liberação de frente",
-      "Considerar ajuste de escala ou método executivo",
+      "Reequilibrar a composição da equipe (oficiais e ajudantes) para a atividade",
+      "Investigar e tratar a origem dos retrabalhos recentes",
+      "Garantir abastecimento e liberação contínua da frente",
+      "Avaliar a logística de transporte interno (gruas, elevadores, distâncias)",
+      "Reforçar a supervisão direta da frente",
     ],
     CRÍTICO: [
-      "Ação imediata: revisar composição e dimensionamento da equipe",
-      "Identificar gargalos de produção com o encarregado",
-      "Verificar se há retrabalho sistemático na atividade",
-      "Avaliar substituição de método executivo",
-      "Calcular impacto no orçamento e prazo total da obra",
+      "Ação imediata: revisar composição, qualificação e tamanho da equipe",
+      "Levantar com o encarregado os gargalos de produção da frente",
+      "Eliminar a causa-raiz dos retrabalhos (projeto, qualidade ou método)",
+      "Reavaliar o método executivo e o ferramental ou equipamento empregado",
+      "Recalcular o impacto no orçamento e no prazo e replanejar a frente",
     ],
   };
 

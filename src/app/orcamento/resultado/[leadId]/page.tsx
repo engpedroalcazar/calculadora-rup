@@ -112,6 +112,11 @@ export default async function ResultadoPage({ params }: Props) {
 
   const multi = itens.length > 1;
 
+  // Preço do relatório por faixa de nº de serviços do orçamento (decisão de produto):
+  // 1 serviço R$ 29,90 · 2 a 9 R$ 89,90 · 10+ R$ 149,90.
+  const numServicos = itens.length;
+  const precoOrcamento = numServicos >= 10 ? 149.9 : numServicos >= 2 ? 89.9 : 29.9;
+
   // Mão de obra consolidada por categoria profissional — derivada dos itens.
   const moMap = new Map<string, { hh: number; custo: number }>();
   for (const it of itens) {
@@ -190,6 +195,10 @@ export default async function ResultadoPage({ params }: Props) {
               )}
             </div>
 
+            {/* Antes do pagamento, a prévia mostra APENAS o custo final estimado.
+                Serviços e insumos só aparecem no relatório pago (decisão de conversão). */}
+            {lead.pago && (
+              <>
             {/* Serviços incluídos */}
             <div className="mt-8">
               <div className="flex items-center gap-2 text-gold-600">
@@ -381,6 +390,8 @@ export default async function ResultadoPage({ params }: Props) {
                 </p>
               )}
             </div>
+              </>
+            )}
 
             {/* PAYWALL */}
             {!lead.pago && (
@@ -406,46 +417,36 @@ export default async function ResultadoPage({ params }: Props) {
                   </div>
                 </div>
 
-                <div className="mt-7 grid gap-4 md:grid-cols-2">
-                  <button
-                    type="button"
-                    disabled
-                    title="Pagamento será habilitado no lançamento (Iter #6)"
-                    className="group cursor-not-allowed rounded-2xl border border-ink-900/10 bg-white p-6 text-left opacity-95 transition hover:border-gold-500"
-                  >
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-bold uppercase tracking-wider text-ink-500">
-                        Este relatório
-                      </p>
-                      <span className="rounded-full bg-ink-900/5 px-2 py-0.5 text-[10px] uppercase tracking-wider text-ink-500">
-                        em breve
-                      </span>
-                    </div>
-                    <p className="display mt-4 text-4xl text-ink-900">R$ 29,90</p>
-                    <p className="mt-2 text-xs text-ink-500">
-                      pagamento único · acesso permanente
+                <div className="mt-7 rounded-2xl border border-ink-900/10 bg-white p-6">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-bold uppercase tracking-wider text-ink-500">
+                      Este orçamento · {numServicos} serviço{numServicos > 1 ? "s" : ""}
                     </p>
-                  </button>
+                    <span className="rounded-full bg-ink-900/5 px-2 py-0.5 text-[10px] uppercase tracking-wider text-ink-500">
+                      em breve
+                    </span>
+                  </div>
+                  <p className="display mt-3 text-5xl text-ink-900">
+                    R$ {precoOrcamento.toFixed(2).replace(".", ",")}
+                  </p>
+                  <p className="mt-2 text-xs text-ink-500">
+                    pagamento único · acesso permanente ao relatório
+                  </p>
 
-                  <button
-                    type="button"
-                    disabled
-                    title="Pagamento será habilitado no lançamento (Iter #6)"
-                    className="group cursor-not-allowed rounded-2xl border-2 border-gold-500 bg-navy-900 p-6 text-left text-cream-50 transition hover:border-gold-400"
-                  >
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-bold uppercase tracking-wider text-gold-500">
-                        Pacote 10 relatórios
-                      </p>
-                      <span className="rounded-full bg-gold-500/20 px-2 py-0.5 text-[10px] uppercase tracking-wider text-gold-500">
-                        economize 50%
-                      </span>
+                  <div className="mt-5 grid grid-cols-3 gap-2 border-t border-ink-900/10 pt-4 text-center">
+                    <div>
+                      <p className={`display text-lg ${numServicos === 1 ? "text-gold-600" : "text-ink-400"}`}>R$ 29,90</p>
+                      <p className="mt-1 text-[10px] uppercase tracking-wider text-ink-400">1 serviço</p>
                     </div>
-                    <p className="display mt-4 text-4xl text-cream-50">R$ 149,90</p>
-                    <p className="mt-2 text-xs text-[var(--fg-on-dark-muted)]">
-                      10 destravamentos · R$ 14,99 por relatório
-                    </p>
-                  </button>
+                    <div className="border-x border-ink-900/10">
+                      <p className={`display text-lg ${numServicos >= 2 && numServicos <= 9 ? "text-gold-600" : "text-ink-400"}`}>R$ 89,90</p>
+                      <p className="mt-1 text-[10px] uppercase tracking-wider text-ink-400">2 a 9 serviços</p>
+                    </div>
+                    <div>
+                      <p className={`display text-lg ${numServicos >= 10 ? "text-gold-600" : "text-ink-400"}`}>R$ 149,90</p>
+                      <p className="mt-1 text-[10px] uppercase tracking-wider text-ink-400">10+ serviços</p>
+                    </div>
+                  </div>
                 </div>
 
                 <p className="mt-5 text-center text-xs text-ink-500">
@@ -596,11 +597,11 @@ export default async function ResultadoPage({ params }: Props) {
                   <Package className="mt-0.5 h-5 w-5 text-gold-600" />
                   <div>
                     <p className="text-sm font-bold text-ink-900">
-                      Tem mais obras pra orçar?
+                      Quanto mais serviços no orçamento, melhor o custo
                     </p>
                     <p className="mt-1 text-xs text-ink-700">
-                      Pacote 10 relatórios por R$ 149,90 (50% off) será liberado
-                      junto com pagamentos no lançamento.
+                      Faixas por orçamento: 1 serviço R$ 29,90 · 2 a 9 R$ 89,90 ·
+                      10 ou mais R$ 149,90. Pagamentos habilitados no lançamento.
                     </p>
                   </div>
                 </div>

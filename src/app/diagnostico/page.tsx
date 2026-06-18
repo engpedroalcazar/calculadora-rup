@@ -182,7 +182,9 @@ export default function DiagnosticoPage() {
       <header className="sticky top-0 z-50 border-b border-[var(--navy-line)]" style={{ background: "rgba(11,18,38,0.92)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
         <div className="container-x flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
-            <Image src="/assets/obraradar-mark-clean.png" alt="ObraRadar" width={45} height={29} style={{ objectFit: "contain" }} />
+            <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-[10px]">
+              <Image src="/logos/orcamento/obraradar-icon.jpg" alt="Obra Radar" width={36} height={36} className="h-9 w-9 object-cover" />
+            </span>
             <span className="display text-sm text-cream-50" style={{ letterSpacing: "0.03em" }}>OBRA RADAR</span>
           </Link>
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold-500">Diagnóstico RUP</span>

@@ -9,7 +9,7 @@ type Props = {
 export function BrandHeader({ variant = "landing" }: Props) {
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--navy-line)] bg-navy-900/85 backdrop-blur">
-      <div className="container-x flex items-center justify-between py-5">
+      <div className="container-x flex h-16 items-center justify-between">
         <Link href="/orcamento" className="flex items-center gap-3 transition-opacity hover:opacity-80">
           <div className="relative h-10 w-10 overflow-hidden rounded-xl">
             <Image
@@ -22,7 +22,7 @@ export function BrandHeader({ variant = "landing" }: Props) {
             />
           </div>
           <div>
-            <p className="display text-lg leading-none text-cream-50">ObraRadar</p>
+            <p className="display text-lg leading-none text-cream-50">OBRA RADAR</p>
             <p className="mt-1 text-[10px] tracking-[0.2em] text-[var(--fg-on-dark-muted)]">
               CALCULADORA DE ORÇAMENTO
             </p>

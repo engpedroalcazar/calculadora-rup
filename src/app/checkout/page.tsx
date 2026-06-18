@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { ArrowLeft, ShieldCheck, Check, Loader2 } from "lucide-react";
 
 const PLANOS = [
   {
@@ -80,182 +81,186 @@ function CheckoutConteudo() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--navy-900)", color: "#f3ecde", fontFamily: "var(--font-body)" }}>
-
-      {/* Header */}
-      <header style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(11,18,38,0.92)", borderBottom: "1px solid var(--navy-line)", backdropFilter: "blur(12px)" }}>
-        <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 20px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
-          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <Image src="/assets/obraradar-mark-clean.png" alt="ObraRadar" width={48} height={30} style={{ objectFit: "contain" }} />
-            <span style={{ fontFamily: "var(--font-display)", fontSize: 16, color: "#f3ecde", letterSpacing: "0.04em" }}>OBRA RADAR</span>
+    <div className="flex min-h-screen flex-col bg-navy-900" style={{ fontFamily: "var(--font-body)" }}>
+      {/* Header — padrão visual do Orçamento (selo do radar + navy) */}
+      <header
+        className="sticky top-0 z-50 border-b border-[var(--navy-line)]"
+        style={{ background: "rgba(11,18,38,0.92)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
+      >
+        <div className="container-x flex h-16 items-center justify-between">
+          <Link href="/" className="flex items-center gap-3">
+            <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-[10px]">
+              <Image src="/logos/orcamento/obraradar-icon.jpg" alt="Obra Radar" width={36} height={36} className="h-9 w-9 object-cover" />
+            </span>
+            <span className="display text-sm text-cream-50" style={{ letterSpacing: "0.04em" }}>OBRA RADAR</span>
           </Link>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(243,236,222,0.6)", fontWeight: 600 }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--cta-500)" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--fg-on-dark-muted)]">
+            <ShieldCheck className="h-4 w-4 text-emerald-500" />
             Pagamento seguro
           </div>
         </div>
       </header>
 
-      <div style={{ maxWidth: 720, margin: "0 auto", padding: "40px 20px 80px" }}>
-
-        <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(24px, 5vw, 32px)", color: "#f3ecde", margin: "0 0 6px", textTransform: "uppercase", letterSpacing: "0.02em" }}>
-          Escolha seu plano
-        </h1>
-        <p style={{ fontSize: 15, color: "rgba(243,236,222,0.55)", margin: "0 0 32px" }}>
-          Selecione a opção que melhor se encaixa na sua necessidade.
-        </p>
-
-        {/* Seleção de planos */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16, marginBottom: 28 }}>
-          {PLANOS.map((p) => {
-            const selecionado = plano === p.id;
-            return (
-              <button
-                key={p.id}
-                onClick={() => setPlano(p.id)}
-                style={{
-                  position: "relative",
-                  padding: 24,
-                  background: selecionado ? "rgba(201,165,116,0.1)" : "rgba(243,236,222,0.03)",
-                  border: selecionado ? "2px solid var(--gold-500)" : "2px solid rgba(243,236,222,0.1)",
-                  borderRadius: "var(--radius-lg)",
-                  cursor: "pointer",
-                  textAlign: "left",
-                  transition: "all 0.2s",
-                  fontFamily: "var(--font-body)",
-                }}
-              >
-                {/* Badge destaque */}
-                {p.destaque && (
-                  <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: "var(--cta-500)", color: "#fff", fontSize: 10, fontWeight: 800, letterSpacing: "0.18em", textTransform: "uppercase", padding: "4px 14px", borderRadius: 100, whiteSpace: "nowrap" }}>
-                    Melhor custo-benefício
-                  </div>
-                )}
-
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-                  <div>
-                    <div style={{ fontFamily: "var(--font-display)", fontSize: 18, color: selecionado ? "var(--gold-500)" : "#f3ecde", letterSpacing: "0.04em" }}>{p.nome}</div>
-                    <div style={{ fontSize: 13, color: "rgba(243,236,222,0.55)", marginTop: 2 }}>{p.descricao}</div>
-                  </div>
-                  <div style={{ width: 22, height: 22, borderRadius: "50%", border: `2px solid ${selecionado ? "var(--gold-500)" : "rgba(243,236,222,0.2)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    {selecionado && <div style={{ width: 10, height: 10, borderRadius: "50%", background: "var(--gold-500)" }} />}
-                  </div>
-                </div>
-
-                <div style={{ fontFamily: "var(--font-display)", fontSize: 32, color: selecionado ? "#f3ecde" : "rgba(243,236,222,0.7)", lineHeight: 1, marginBottom: 4 }}>
-                  R$ {p.preco.toFixed(2).replace(".", ",")}
-                </div>
-                {"economia" in p && (
-                  <div style={{ fontSize: 11, color: "var(--cta-500)", fontWeight: 700, letterSpacing: "0.1em", marginBottom: 16 }}>{p.economia}</div>
-                )}
-                {!("economia" in p) && <div style={{ marginBottom: 16 }} />}
-
-                <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 7 }}>
-                  {p.itens.map((item) => (
-                    <li key={item} style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 13, color: selecionado ? "rgba(243,236,222,0.8)" : "rgba(243,236,222,0.5)" }}>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={selecionado ? "var(--cta-500)" : "rgba(243,236,222,0.3)"} strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}><path d="M4 12l5 5L20 6"/></svg>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* O que está incluso */}
-        <div style={{ marginBottom: 20, padding: 24, background: "rgba(243,236,222,0.03)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)" }}>
-          <p style={{ margin: "0 0 16px", fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--gold-500)" }}>O que você recebe em cada relatório</p>
-          <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
-            {inclusos.map((item) => (
-              <li key={item} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13, color: "rgba(243,236,222,0.75)" }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--cta-500)" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}><path d="M4 12l5 5L20 6"/></svg>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Resumo */}
-        <div style={{ marginBottom: 20, padding: 24, background: "rgba(201,165,116,0.06)", border: "1px solid var(--gold-line)", borderRadius: "var(--radius-md)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: 14, marginBottom: 14, borderBottom: "1px solid rgba(243,236,222,0.08)" }}>
-            <span style={{ fontSize: 14, color: "rgba(243,236,222,0.7)" }}>{planoSelecionado.nome} — {planoSelecionado.descricao}</span>
-            <span style={{ fontWeight: 700, color: "#f3ecde" }}>R$ {preco.toFixed(2).replace(".", ",")}</span>
-          </div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontFamily: "var(--font-display)", fontSize: 15, color: "#f3ecde", letterSpacing: "0.04em" }}>TOTAL</span>
-            <span style={{ fontFamily: "var(--font-display)", fontSize: 32, color: "var(--gold-500)", lineHeight: 1 }}>
-              R$ {preco.toFixed(2).replace(".", ",")}
-            </span>
-          </div>
-        </div>
-
-        {/* Forma de pagamento */}
-        <div style={{ marginBottom: 24, padding: 24, background: "rgba(243,236,222,0.03)", border: "1px solid rgba(243,236,222,0.1)", borderRadius: "var(--radius-md)" }}>
-          <p style={{ margin: "0 0 14px", fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--gold-500)" }}>Forma de pagamento</p>
-          <div style={{ padding: "14px 18px", background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.3)", borderRadius: "var(--radius-md)", display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ width: 18, height: 18, borderRadius: "50%", border: "2px solid var(--cta-500)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--cta-500)" }} />
-            </div>
-            <span style={{ fontWeight: 600, fontSize: 14, color: "#f3ecde" }}>Pix / Cartão de crédito</span>
-          </div>
-          <p style={{ margin: "10px 0 0", fontSize: 12, color: "rgba(243,236,222,0.4)", textAlign: "center" }}>
-            Pix e cartão de crédito via Mercado Pago
+      <main className="container-x flex-1 py-12 lg:py-16">
+        <div className="mx-auto max-w-3xl">
+          <Link
+            href={`/resultado?id=${id}`}
+            className="inline-flex items-center gap-2 text-sm text-[var(--fg-on-dark-muted)] transition-colors hover:text-cream-50"
+          >
+            <ArrowLeft className="h-4 w-4" /> Voltar para o resultado
+          </Link>
+          <p className="t-label mt-6">Pagamento · laudo RUP</p>
+          <h1 className="display display-xb mt-3 text-3xl text-cream-50 md:text-4xl">
+            Escolha seu plano
+          </h1>
+          <p className="mt-3 text-sm text-[var(--fg-on-dark-muted)]">
+            Selecione a opção que melhor se encaixa na sua necessidade.
           </p>
         </div>
 
-        {erro && (
-          <div style={{ marginBottom: 16, padding: "14px 18px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.35)", borderRadius: "var(--radius-md)", fontSize: 14, color: "#fca5a5" }}>
-            {erro}
-          </div>
-        )}
-
-        <button
-          onClick={confirmar}
-          disabled={loading || !id}
-          style={{
-            width: "100%", padding: "18px 24px",
-            background: (loading || !id) ? "rgba(16,185,129,0.4)" : "var(--cta-500)",
-            color: "#fff", border: "none", borderRadius: "var(--radius-md)",
-            fontFamily: "var(--font-body)", fontSize: 16, fontWeight: 800,
-            letterSpacing: "0.04em", cursor: (loading || !id) ? "not-allowed" : "pointer",
-            boxShadow: (loading || !id) ? "none" : "var(--cta-glow)",
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-            transition: "all 0.2s",
-          }}
+        {/* Cartão creme — identidade do Orçamento */}
+        <div
+          className="mx-auto mt-10 max-w-3xl rounded-3xl bg-cream-50 p-6 text-ink-900 md:p-10"
+          style={{ boxShadow: "var(--shadow-card)" }}
         >
-          {loading ? (
-            <>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ animation: "spin 1s linear infinite" }}><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-              Processando...
-            </>
-          ) : `Confirmar — R$ ${preco.toFixed(2).replace(".", ",")}`}
-        </button>
+          {/* Seleção de planos */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            {PLANOS.map((p) => {
+              const selecionado = plano === p.id;
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => setPlano(p.id)}
+                  className={`relative rounded-2xl border-2 p-5 text-left transition ${
+                    selecionado
+                      ? "border-gold-500 bg-[var(--gold-soft)]"
+                      : "border-ink-700/15 bg-white hover:border-gold-500/40"
+                  }`}
+                >
+                  {p.destaque && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-emerald-500 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.18em] text-white">
+                      Melhor custo-benefício
+                    </span>
+                  )}
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="display text-lg text-ink-900">{p.nome}</p>
+                      <p className="mt-0.5 text-xs text-ink-400">{p.descricao}</p>
+                    </div>
+                    <span
+                      className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 ${
+                        selecionado ? "border-gold-500 bg-gold-500" : "border-ink-700/25 bg-white"
+                      }`}
+                    >
+                      {selecionado && <Check className="h-3 w-3 text-navy-900" strokeWidth={3} />}
+                    </span>
+                  </div>
+                  <p className="display mt-3 text-3xl text-ink-900">
+                    R$ {p.preco.toFixed(2).replace(".", ",")}
+                  </p>
+                  {"economia" in p ? (
+                    <p className="mt-1 text-xs font-bold uppercase tracking-wider text-emerald-600">
+                      {p.economia}
+                    </p>
+                  ) : (
+                    <div className="mt-1 h-4" />
+                  )}
+                  <ul className="mt-4 grid gap-2">
+                    {p.itens.map((item) => (
+                      <li key={item} className="flex items-start gap-2 text-xs text-ink-700">
+                        <Check className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-emerald-600" strokeWidth={2.5} />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </button>
+              );
+            })}
+          </div>
 
-        <p style={{ marginTop: 12, textAlign: "center", fontSize: 12, color: "rgba(243,236,222,0.4)" }}>
-          Acesso imediato ao relatório após confirmação.
-        </p>
+          {/* O que está incluso */}
+          <div className="mt-6 rounded-2xl border border-ink-700/10 bg-white p-6">
+            <p className="t-label t-label-on-cream">O que você recebe em cada relatório</p>
+            <ul className="mt-4 grid gap-2.5 sm:grid-cols-2">
+              {inclusos.map((item) => (
+                <li key={item} className="flex items-start gap-2 text-sm text-ink-700">
+                  <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-600" strokeWidth={2.5} />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        <div style={{ marginTop: 24, textAlign: "center" }}>
-          <Link href={`/resultado?id=${id}`} style={{ fontSize: 13, color: "rgba(243,236,222,0.4)" }}>
-            Voltar para o resultado
-          </Link>
+          {/* Resumo */}
+          <div className="mt-6 rounded-2xl bg-[var(--gold-soft)] p-6">
+            <div className="flex items-center justify-between border-b border-ink-900/10 pb-3">
+              <span className="text-sm text-ink-700">
+                {planoSelecionado.nome} · {planoSelecionado.descricao}
+              </span>
+              <span className="font-bold text-ink-900">R$ {preco.toFixed(2).replace(".", ",")}</span>
+            </div>
+            <div className="flex items-center justify-between pt-3">
+              <span className="display text-base text-ink-900">TOTAL</span>
+              <span className="display text-3xl text-gold-600">R$ {preco.toFixed(2).replace(".", ",")}</span>
+            </div>
+          </div>
+
+          {/* Forma de pagamento */}
+          <div className="mt-6 rounded-2xl border border-ink-700/10 bg-white p-6">
+            <p className="t-label t-label-on-cream">Forma de pagamento</p>
+            <div className="mt-4 flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-50/60 px-4 py-3">
+              <span className="flex h-[18px] w-[18px] items-center justify-center rounded-full border-2 border-emerald-600">
+                <span className="h-2 w-2 rounded-full bg-emerald-600" />
+              </span>
+              <span className="text-sm font-semibold text-ink-900">Pix / Cartão de crédito</span>
+            </div>
+            <p className="mt-2 text-center text-xs text-ink-400">
+              Pix e cartão de crédito via Mercado Pago
+            </p>
+          </div>
+
+          {erro && (
+            <div
+              className="mt-4 rounded-xl border px-4 py-3 text-sm"
+              style={{ borderColor: "rgba(201,90,74,0.3)", background: "rgba(201,90,74,0.1)", color: "var(--sev-critico)" }}
+            >
+              {erro}
+            </div>
+          )}
+
+          <button
+            onClick={confirmar}
+            disabled={loading || !id}
+            className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl px-6 py-4 text-base font-extrabold text-white transition disabled:cursor-not-allowed disabled:opacity-50"
+            style={{ background: "var(--cta-500)", boxShadow: loading || !id ? "none" : "var(--cta-glow)", letterSpacing: "0.03em" }}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Processando...
+              </>
+            ) : (
+              `Confirmar · R$ ${preco.toFixed(2).replace(".", ",")}`
+            )}
+          </button>
+          <p className="mt-3 text-center text-xs text-ink-400">
+            Acesso imediato ao relatório após confirmação.
+          </p>
         </div>
-      </div>
-
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </main>
     </div>
   );
 }
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={
-      <div style={{ minHeight: "100vh", background: "var(--navy-900)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: 32, height: 32, border: "2px solid rgba(243,236,222,0.1)", borderTop: "2px solid var(--gold-500)", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-navy-900">
+          <Loader2 className="h-8 w-8 animate-spin text-gold-500" />
+        </div>
+      }
+    >
       <CheckoutConteudo />
     </Suspense>
   );

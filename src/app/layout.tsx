@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-const APP_URL = "https://obraradarapp.com";
+const APP_URL = "https://www.obraradarapp.com.br";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),

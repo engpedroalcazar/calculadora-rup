@@ -42,7 +42,7 @@ export function SiteFooter() {
                   OBRA RADAR
                 </p>
                 <p className="mt-1 text-[10px] tracking-[0.2em] text-gold-500">
-                  CALCULADORA · ORÇAMENTO
+                  CALCULADORA DE ORÇAMENTO
                 </p>
               </div>
             </Link>
